@@ -22,10 +22,10 @@ GLvoid DrawScene() //--- 콜백 함수: 그리기 콜백 함수
 	//--- 변경된 배경색 설정
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glEnable(GL_DEPTH_TEST);
 	// 렌더링 파이프라인에 세이더 불러오기
-
+		
 	InGameManager::GetInstance().DrawScene();
+	glEnable(GL_DEPTH_TEST);
 	
 	glutSwapBuffers(); // 화면에 출력하기
 }
@@ -33,6 +33,12 @@ GLvoid DrawScene() //--- 콜백 함수: 그리기 콜백 함수
 GLvoid InitShader() {
 	InGameManager::GetInstance().InitShader();
 }
+
+GLvoid InitObject() {
+	InGameManager::GetInstance().InitObject();
+}
+
+
 
 //--- 메인 함수
 void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
@@ -46,6 +52,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	//--- GLEW 초기화하기
 	glewExperimental = GL_TRUE;
 	glewInit();
+	InitObject();
 	InitShader();
 	InitBuffer();
 	glutDisplayFunc(DrawScene);

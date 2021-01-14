@@ -1,8 +1,5 @@
 #pragma once
-#include <iostream>
 #include "Standard.h"
-using namespace std;
-
 class Object
 {
 private:

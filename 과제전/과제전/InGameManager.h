@@ -18,6 +18,7 @@ public:
 
 	GLvoid DrawScene();
     GLvoid InitBuffer();
+    GLvoid InitShader();
 protected:
 
 };

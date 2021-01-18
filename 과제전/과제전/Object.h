@@ -1,12 +1,14 @@
 #pragma once
-#include "Standard.h"
+#ifndef OBJECT_H
+#define OBJECT_H
+
 class Object
 {
 private:
 
 public:
 	Object() { }
-	virtual void DrawObject(GLuint s_program, GLuint VAO);
+	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexCount);
 	bool CollisionCheck(Object type);
 	Vector4 GetBoundingBox();
 	Vector3 GetPosition() { return position; }
@@ -16,3 +18,5 @@ protected:
 	ObjectType type;
 	float radius; // bbox¿ß«‘!
 };
+
+#endif

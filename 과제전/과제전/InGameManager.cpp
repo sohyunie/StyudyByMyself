@@ -1,17 +1,19 @@
+#include "standard.h"
 #include "InGameManager.h"
+#include "ReadObj.h"
+#include "Ghost.h"
 #include "Block.h"
-
-InGameManager* InGameManager::instance = NULL;
 
 GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
 GLuint vertexshader, fragmentshader; // 세이더 객체
+InGameManager* InGameManager::instance = nullptr;
 
 char* filetobuf(const char* file)
 {
 	FILE* fptr;
 	long length;
 	char* buf;
-	fptr = fopen(file, "rb"); // Open file for reading
+	fptr = fopen(file, "rb"); // Open file for reading 나빳어ㅐ
 	if (!fptr) // Return NULL on failure
 		return NULL;
 	fseek(fptr, 0, SEEK_END); // Seek to the end of the file
@@ -72,13 +74,42 @@ GLvoid InGameManager::InitBuffer() {
 	// PLAYER
 
 	// GHOST
+	glGenVertexArrays(1, &this->VAO[GHOST]);
+	glBindVertexArray(this->VAO[GHOST]);
+
+	glGenBuffers(3, this->VBO[GHOST]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[0][GHOST]);
+	glBufferData(GL_ARRAY_BUFFER, gobj->vertexCount * sizeof(float) * 3, gobj->vPosData, GL_STATIC_DRAW);
+	int posLocation = glGetAttribLocation(s_program, "in_position");
+	glVertexAttribPointer(posLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
+	glEnableVertexAttribArray(posLocation);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[1][GHOST]);
+	glBufferData(GL_ARRAY_BUFFER, gobj->vertexCount * sizeof(float) * 3, gobj->vNormalData, GL_STATIC_DRAW);
+	int normalLocation = glGetAttribLocation(s_program, "in_normal");
+	glVertexAttribPointer(normalLocation, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
+	glEnableVertexAttribArray(normalLocation);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[2][GHOST]);
+	glBufferData(GL_ARRAY_BUFFER, this->gobj->vertexCount * sizeof(float) * 2, this->gobj->vTextureCoordinateData, GL_STATIC_DRAW);
+	int uvLocation = glGetAttribLocation(s_program, "in_uv");
+	glVertexAttribPointer(uvLocation, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
+	glEnableVertexAttribArray(uvLocation);
+
+	glGenBuffers(1, &this->EBO[GHOST]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[GHOST]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->gobj->indexCount * sizeof(int), this->gobj->indexData, GL_STATIC_DRAW);
+
+
+
 
 	// BLOCK
-	glGenVertexArrays(1, &VAO[BLOCK]); //--- VAO 를 지정하고 할당하기
-	glBindVertexArray(VAO[BLOCK]); //--- VAO를 바인드하기
-	glGenBuffers(2, &VBO[BLOCK]); //--- 2개의 VBO를 지정하고 할당하기
+	glGenVertexArrays(1, &this->VAO[BLOCK]); //--- VAO 를 지정하고 할당하기
+	glBindVertexArray(this->VAO[BLOCK]); //--- VAO를 바인드하기
+	glGenBuffers(2, &this->VBO[0][BLOCK]); //--- 2개의 VBO를 지정하고 할당하기
 	//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-	glBindBuffer(GL_ARRAY_BUFFER, VBO[BLOCK]);
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[0][BLOCK]);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(blockVertex), blockVertex, GL_STATIC_DRAW);
 	// 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -93,9 +124,8 @@ GLvoid InGameManager::InitBuffer() {
 
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
-	for (Block block : vBlock) {
-		block.DrawObject(s_program, VAO[BLOCK]);
-	}
+	this->block->DrawObject(s_program, this->VAO[BLOCK], 36);
+	//this->ghost->DrawObject(s_program, this->VAO[GHOST], this->gobj->indexCount);
 }
 
 GLvoid InGameManager::InitShader() {
@@ -115,5 +145,8 @@ GLvoid InGameManager::InitShader() {
 }
 
 GLvoid InGameManager::InitObject() {
-	vBlock.push_back(Block());
+	this->block = new Block();
+	this->ghost = new Ghost();
+	this->gobj = new ObjData();
+	// vBlock.push_back(Block());
 }

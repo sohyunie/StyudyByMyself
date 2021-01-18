@@ -48,6 +48,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PowerBead.cpp" />
+    <ClCompile Include="Standard.cpp" />
     <ClCompile Include="StartSceneUI.cpp" />
     <ClCompile Include="StaticObject.cpp" />
   </ItemGroup>

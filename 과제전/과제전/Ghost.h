@@ -9,7 +9,5 @@ public:
 	Ghost() {
 		this->type = ObjectType::GHOST;
 	}
-	void FindRoad() {
-
-	}
+	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
 };

@@ -1,6 +1,7 @@
+#include "Standard.h"
 #include "Block.h"
 
-void Block::DrawObject(GLuint s_program, GLuint VAO) {
+void Block::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
 	glm::mat4 TR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 Rz = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 Tx = glm::mat4(1.0f); //--- transformation matrix
@@ -41,5 +42,5 @@ void Block::DrawObject(GLuint s_program, GLuint VAO) {
 	// 사용할 VAO 불러오기
 	glBindVertexArray(VAO);
 	// 삼각형 그리기
-	glDrawArrays(GL_TRIANGLES, 0, 36);
+	glDrawArrays(GL_TRIANGLES, 0, indexCount);
 }

@@ -16,8 +16,30 @@
 #include <glm/ext.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+
 using namespace std;
 const int MAX_VAO_TYPE = 5;
+
+#define WINDOW_WITDH	800
+#define WINDOW_HEIGHT	600
+
+#define CAMERA_POS		glm::vec3(0.0, 0.0, 50.0)
+#define OBJECT_COLOR	glm::vec3(1.0, 1.0, 1.0)
+#define LIGHT_AMBIENT	glm::vec3(0.1, 0.1, 0.1)
+#define LIGHT_POS		glm::vec3(1000.0, 1000.0, 100.0)
+#define LIGHT_COLOR		glm::vec3(1.0, 1.0, 1.0)
+
+#define FILE_NAME		"sphere.obj"
+
+
+struct ObjData {
+	float* vPosData;
+	float* vNormalData;
+	float* vTextureCoordinateData;
+	int* indexData;
+	int vertexCount;
+	int indexCount;
+};
 
 struct Vector3 {
 	float x;

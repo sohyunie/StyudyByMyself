@@ -1,3 +1,4 @@
+#include "Standard.h"
 #include "Object.h"
 
 bool Object::CollisionCheck(Object type) {
@@ -28,6 +29,6 @@ Vector4 Object::GetBoundingBox() {
     return Vector4(position.x - radius, position.z - radius, position.x + radius, position.z + radius);
 }
 
-void Object::DrawObject(GLuint s_program, GLuint VAO) {
+void Object::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
 	cout << "draw" << endl;
 }

@@ -1,6 +1,5 @@
 #include "Standard.h"
 #include "InGameManager.h"
-#include "ReadObj.h"
 
 //GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
 //GLuint vertexshader, fragmentshader; // 세이더 객체
@@ -24,8 +23,9 @@ GLvoid DrawScene() //--- 콜백 함수: 그리기 콜백 함수
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	// 렌더링 파이프라인에 세이더 불러오기
 		
-	InGameManager::GetInstance().DrawScene();
+
 	glEnable(GL_DEPTH_TEST);
+	InGameManager::GetInstance().DrawScene();
 	
 	glutSwapBuffers(); // 화면에 출력하기
 }
@@ -47,7 +47,7 @@ void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 	glutInitWindowPosition(100, 100);
-	glutInitWindowSize(800, 600);
+	glutInitWindowSize(WINDOW_WITDH, WINDOW_HEIGHT);
 	glutCreateWindow("Example1");
 	//--- GLEW 초기화하기
 	glewExperimental = GL_TRUE;

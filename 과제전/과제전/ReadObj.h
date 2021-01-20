@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -173,4 +175,3 @@ bool ReadObj(const char* objFileName, float*& vPosOut, float*& vNormalOut, float
 
     return true;
 }
-#pragma once

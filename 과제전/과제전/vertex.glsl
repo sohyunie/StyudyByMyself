@@ -1,24 +1,22 @@
 #version 330
-//--- in_Position: attribute index 0
-//--- in_Color: attribute index 1
 
-layout (location = 0) in vec3 vPos; //--- 위치 속성
-// in vec3 in_Color; //--- 색상 속성 조명 들어가면 필요없나...?
-layout (location = 1) in vec3 vNormal;
+in vec3 in_position;
+in vec3 in_normal;
+in vec2 in_uv;
 
-// out vec3 ex_Color; // 프래그먼트 세이더에게 전달
-out vec3 FragPos; //--- 객체의 위치값을 프래그먼트 세이더로 보낸다.
-out vec3 Normal; //--- 노멀값을 프래그먼트 세이더로 보낸다.
+out vec3 v2f_normal;
+out vec3 v2f_worldPos; 
 
-
-uniform mat4 modelTransform;
-uniform mat4 viewTransform;
-uniform mat4 projectionTransform;
+uniform mat4 g_modelTransform;
+uniform mat4 g_view;
+uniform mat4 g_projection;
 
 void main(void)
 {
-	gl_Position =  projectionTransform * viewTransform * modelTransform * vec4 (vPos, 1.0);
-	FragPos = vec3(modelTransform * vec4(vPos, 1.0));
-	Normal = vNormal;
-	// ex_Color = in_Color;
+	vec4 worldPos = g_modelTransform * vec4(in_position, 1.0);
+	gl_Position = g_projection * g_view * worldPos;
+
+	vec4 worldNormal = g_modelTransform * vec4(in_normal, 0.0);
+	v2f_normal = vec3(worldNormal.x, worldNormal.y, worldNormal.z);
+	v2f_worldPos = vec3(worldPos.x, worldPos.y, worldPos.z);
 }

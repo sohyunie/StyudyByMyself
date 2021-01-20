@@ -31,6 +31,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="PowerBead.h" />
     <ClInclude Include="ReadObj.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="Standard.h" />
     <ClInclude Include="StartSceneUI.h" />
     <ClInclude Include="StaticObject.h" />

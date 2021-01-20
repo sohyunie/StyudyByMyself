@@ -33,7 +33,7 @@ const int MAX_VAO_TYPE = 5;
 
 
 struct ObjData {
-	float* vPosData;
+	float* vPosData;	// 값이 하나만 있어도 되는 건 그냥 변수로/ 아니고 여러개가 나열되고 필요한 것들은 *로 받는다.
 	float* vNormalData;
 	float* vTextureCoordinateData;
 	int* indexData;
@@ -73,10 +73,10 @@ struct Vector4 {
 
 enum ObjectType {
     PLAYER,
-    GHOST,
+	BLOCK,
     BEAD,
+	GHOST,
     POWERBEAD,
-    BLOCK,
 };
 
 

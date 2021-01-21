@@ -51,6 +51,10 @@ struct Vector3 {
 		this->y = y;
 		this->z = z;
 	}
+	Vector3 operator+ (Vector3 value) {
+		return Vector3(x + value.x, y + value.y, z + value.z);
+	}
+
 	Vector3() {}
 };
 

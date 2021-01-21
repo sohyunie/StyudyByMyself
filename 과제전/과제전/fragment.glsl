@@ -13,7 +13,7 @@ uniform vec3 g_cameraPos;
 
 void main(void)
 {	
-	vec3 ambient = g_lightAmbient * g_lightColor;
+	vec3 ambient = vec3(0.1,0.1,0.1) * g_lightColor;
 
 	vec3 normalVector = normalize(v2f_normal);
 	vec3 lightDir = normalize(g_lightPos - v2f_worldPos);

@@ -7,15 +7,12 @@ private:
 public:
 	Player() {
 		this->type = ObjectType::PLAYER;
+		this->position = Vector3(20, 20, 0);
 	}
-	void ControlPlayer() {
 
-	}
-	void EatBead() {
+	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
 
-	}
-	void BeStrong() {
-
-	}
+	Vector3 GetPlayerPos() { return this->position; }
+	void SetPlayerPos(Vector3 playerPos) { this->position = playerPos; }
 };
 

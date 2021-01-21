@@ -1,11 +1,40 @@
 #include "Standard.h"
 #include "InGameManager.h"
+#include "Player.h"
 
-//GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
-//GLuint vertexshader, fragmentshader; // 세이더 객체
+using namespace std;
+
+void InitBuffer()
+{
+	InGameManager::GetInstance().InitBuffer();
+}
+
+void InitShader()
+{
+	InGameManager::GetInstance().InitShader();
+}
 
 
-GLvoid Reshape(int w, int h) {
+GLvoid drawScene()
+{
+	glClearColor(0, 0, 0, 1);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glFrontFace(GL_CCW);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	InGameManager::GetInstance().DrawScene();
+	glutSwapBuffers();                        // 화면에 출력하기
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+}
+
+GLvoid Reshape(int w, int h)
+{
 	glViewport(0, 0, w, h);
 }
 
@@ -13,23 +42,44 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 'a':
+	case 'x':
 		glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
 		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x - 20.0f, cameraPos.y, cameraPos.z));
 		break;
-	case 'd':		
+	case 'X':
 		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x + 20.0f, cameraPos.y, cameraPos.z));
+		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x += 20.0f, cameraPos.y, cameraPos.z));
 		break;
-	case 'w':
-		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y + 20.0f, cameraPos.z));
+	}
+
+	glutPostRedisplay();
+}
+
+void processSpecialKeys(int key, int x, int y)
+{
+	Vector3 playerPos = Vector3();
+	switch (key)
+	{
+	case GLUT_KEY_DOWN:
+		cout << "down됨?" << endl;
+		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
+		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(0.0, 0.0, -2.0));
 		break;
-	case 's':
-		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y - 20.0f, cameraPos.z));
+
+	case GLUT_KEY_UP:
+		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
+		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(0.0, 0.0, 2.0));
+
 		break;
-	default:
+
+	case GLUT_KEY_LEFT:
+		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
+		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(2.0, 0.0, 0.0));
+		break;
+
+	case GLUT_KEY_RIGHT:
+		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
+		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(-2.0, 0.0, 0.0));
 		break;
 	}
 
@@ -37,64 +87,31 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 }
 
 
-
-//--- 버퍼 생성하고 데이터 받아오기
-GLvoid InitBuffer()
+int main(int argc, char** argv)
 {
-	InGameManager::GetInstance().InitBuffer();
-}
-
-GLvoid DrawScene() //--- 콜백 함수: 그리기 콜백 함수
-{
-	cout << "DrawScene GameManager" << endl;
-	//--- 변경된 배경색 설정
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	// 렌더링 파이프라인에 세이더 불러오기
-
-	//if (InGameManager::GetInstance().GetIsDrawFill())
-	//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-	//else
-	//	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	glPolygonMode(GL_FRONT, GL_FILL);
-	glFrontFace(GL_CCW);
-	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
-	InGameManager::GetInstance().DrawScene();
-	
-	glutSwapBuffers(); // 화면에 출력하기
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
-}
-
-GLvoid InitShader() {
-	InGameManager::GetInstance().InitShader();
-}
-
-GLvoid InitObject() {
-	InGameManager::GetInstance().InitObject();
-}
-
-
-
-//--- 메인 함수
-void main(int argc, char** argv) //--- 윈도우 출력하고 콜백함수 설정
-{
-	//--- 윈도우 생성하기
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(WINDOW_WITDH, WINDOW_HEIGHT);
 	glutCreateWindow("Example1");
-	//--- GLEW 초기화하기
+
 	glewExperimental = GL_TRUE;
-	glewInit();
-	InitObject();
+	if (glewInit() != GLEW_OK)
+	{
+		std::cerr << "Unable to initialize GLEW" << std::endl;
+		exit(EXIT_FAILURE);
+	}
+	else
+		std::cout << "GLEW Initialized\n";
+
+	//ReadObj(FILE_NAME, InGameManager::GetInstance().gobj->vPosData, InGameManager::GetInstance().gobj->vNormalData, InGameManager::GetInstance().gobj->vTextureCoordinateData, InGameManager::GetInstance().gobj->indexData, InGameManager::GetInstance().gobj->vertexCount, InGameManager::GetInstance().gobj->indexCount);
+	InGameManager::GetInstance().InitObject();
 	InitShader();
 	InitBuffer();
-	glutDisplayFunc(DrawScene);
+
+	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
 	glutKeyboardFunc(Keyboard);
+	glutSpecialFunc(processSpecialKeys);
 	glutMainLoop();
 }

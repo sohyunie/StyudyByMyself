@@ -1,6 +1,7 @@
 #pragma once
 class Block;    // 기능은 못쓰고 Block이라는 애가 존재해만 알 수 있음
 class Ghost;
+class Player;
 
 class InGameManager
 {
@@ -16,6 +17,7 @@ private:
     Block* block2;
     Ghost* ghost;
     ObjData* gobj;
+    Player* player;
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -25.0f);
     glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 1.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -42,6 +44,8 @@ public:
     glm::vec3 GetCameraDirection() { return this->cameraDirection; }
     glm::vec3 GetCameraUp() { return this->cameraUp; }
     void SetCamera(glm::vec3 camera) { this->cameraPos = camera; }; // set은 void / return타입이 없어도됨
+
+    Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
 protected:
 
 };

@@ -1,8 +1,9 @@
-#include "standard.h"
+#include "Standard.h"
 #include "InGameManager.h"
 #include "ReadObj.h"
 #include "Ghost.h"
 #include "Block.h"
+#include "Player.h"
 
 GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
 GLuint vertexShader, fragmentShader; // 세이더 객체
@@ -69,6 +70,21 @@ GLuint s_program;
 GLvoid InGameManager::InitBuffer() {
 	cout << "InitBuffer InGameManager" << endl;
 	// PLAYER
+	glGenVertexArrays(1, &this->VAO[PLAYER]); //--- VAO 를 지정하고 할당하기
+	glBindVertexArray(this->VAO[PLAYER]); //--- VAO를 바인드하기
+	glGenBuffers(2, &this->VBO[PLAYER][0]); //--- 2개의 VBO를 지정하고 할당하기
+	//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[PLAYER][0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(blockVertex), blockVertex, GL_STATIC_DRAW);
+	// 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// attribute 인덱스 0번을 사용가능하게 함
+	glEnableVertexAttribArray(0);
+	// 색상값을 attribute 인덱스 1번에 명시한다
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// attribute 인덱스 1번을 사용 가능하게 함.
+	glEnableVertexAttribArray(1);
+
 
 	// GHOST
 	glGenVertexArrays(1, &this->VAO[GHOST]);
@@ -96,66 +112,28 @@ GLvoid InGameManager::InitBuffer() {
 
 
 	// BLOCK
-	//glGenVertexArrays(1, &this->VAO[BLOCK]); //--- VAO 를 지정하고 할당하기
-	//glBindVertexArray(this->VAO[BLOCK]); //--- VAO를 바인드하기
-	//glGenBuffers(2, &this->VBO[BLOCK][0]); //--- 2개의 VBO를 지정하고 할당하기
-	////--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-	//glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BLOCK][0]);
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(blockVertex), blockVertex, GL_STATIC_DRAW);
-	//// 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	//// attribute 인덱스 0번을 사용가능하게 함
-	//glEnableVertexAttribArray(0);
-	//// 색상값을 attribute 인덱스 1번에 명시한다
-	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	//// attribute 인덱스 1번을 사용 가능하게 함.
-	//glEnableVertexAttribArray(1);
+	glGenVertexArrays(1, &this->VAO[BLOCK]); //--- VAO 를 지정하고 할당하기
+	glBindVertexArray(this->VAO[BLOCK]); //--- VAO를 바인드하기
+	glGenBuffers(2, &this->VBO[BLOCK][0]); //--- 2개의 VBO를 지정하고 할당하기
+	//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BLOCK][0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(blockVertex), blockVertex, GL_STATIC_DRAW);
+	// 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// attribute 인덱스 0번을 사용가능하게 함
+	glEnableVertexAttribArray(0);
+	// 색상값을 attribute 인덱스 1번에 명시한다
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	// attribute 인덱스 1번을 사용 가능하게 함.
+	glEnableVertexAttribArray(1);
 }
 
 GLvoid InGameManager::DrawScene() {
-	//glUseProgram(s_program);
-
-	//glm::mat4 modelTransform = glm::mat4(1.0f);
-	//modelTransform = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-
-	//glm::vec4 cameraPos = glm::rotate(glm::mat4(1.0f), glm::radians(InGameManager::GetInstance().degreeCameraRotate), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::vec4(CAMERA_POS, 1.0f);
-	//glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	//glm::mat4 proj = glm::perspective(glm::radians(60.0f), WINDOW_WITDH / (float)WINDOW_HEIGHT, 0.001f, 1000.f);
-
-	//GLuint modelTransformLocation = glGetUniformLocation(s_program, "g_modelTransform");
-	//glUniformMatrix4fv(modelTransformLocation, 1, GL_FALSE, glm::value_ptr(modelTransform));
-
-	//GLuint viewLocation = glGetUniformLocation(s_program, "g_view");
-	//glUniformMatrix4fv(viewLocation, 1, GL_FALSE, glm::value_ptr(view));
-
-	//GLuint projectLocation = glGetUniformLocation(s_program, "g_projection");
-	//glUniformMatrix4fv(projectLocation, 1, GL_FALSE, glm::value_ptr(proj));
-
-	//glm::vec3 lightAmbient = LIGHT_AMBIENT;
-	//GLuint lightAmbientLocation = glGetUniformLocation(s_program, "g_lightAmbient");
-	//glUniform3fv(lightAmbientLocation, 1, (float*)&lightAmbient);
-
-	//glm::vec3 lightPos = LIGHT_POS;
-	//GLuint lightPosLocation = glGetUniformLocation(s_program, "g_lightPos");
-	//glUniform3fv(lightPosLocation, 1, (float*)&lightPos);
-
-	//glm::vec3 lightColor = LIGHT_COLOR;
-	//GLuint lightColorLocation = glGetUniformLocation(s_program, "g_lightColor");
-	//glUniform3fv(lightColorLocation, 1, (float*)&lightColor);
-
-	//glm::vec3 objColor = OBJECT_COLOR;
-	//GLuint objColorLocation = glGetUniformLocation(s_program, "g_objectColor");
-	//glUniform3fv(objColorLocation, 1, (float*)&objColor);
-
-	//GLuint cameraPosLocation = glGetUniformLocation(s_program, "g_cameraPos");
-	//glUniform3fv(cameraPosLocation, 1, (float*)&cameraPos);
-
-	//glBindVertexArray(InGameManager::GetInstance().VAO[4]);
-	//glDrawElements(GL_TRIANGLES, InGameManager::GetInstance().gobj->indexCount, GL_UNSIGNED_INT, 0);
 	glUseProgram(s_program);
-	this->block->DrawObject(s_program, this->VAO[BLOCK], 36);
+	//this->block->DrawObject(s_program, this->VAO[BLOCK], 36);
 	this->ghost->DrawObject(s_program, this->VAO[GHOST], this->gobj->indexCount);
-	this->block2->DrawObject(s_program, this->VAO[BLOCK], 36);
+	//this->block2->DrawObject(s_program, this->VAO[BLOCK], 36);
+	this->player->DrawObject(s_program, this->VAO[PLAYER], 36);
 }
 
 GLvoid InGameManager::InitShader() {
@@ -180,7 +158,7 @@ GLvoid InGameManager::InitObject()
 	this->block2 = new Block(Vector3(10, 0, 0));
 	this->ghost = new Ghost();
 	this->gobj = new ObjData();
-
+	this->player = new Player();
 	ReadObj(FILE_NAME, this->gobj->vPosData, this->gobj->vNormalData, this->gobj->vTextureCoordinateData, this->gobj->indexData, this->gobj->vertexCount, this->gobj->indexCount);
 
 	cout << "test" << endl;

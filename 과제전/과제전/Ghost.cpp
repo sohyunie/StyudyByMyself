@@ -41,5 +41,5 @@ void Ghost::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
 	// 사용할 VAO 불러오기
 	glBindVertexArray(VAO);
 	// 삼각형 그리기
-	glDrawArrays(GL_TRIANGLES, 0, indexCount);
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
 }

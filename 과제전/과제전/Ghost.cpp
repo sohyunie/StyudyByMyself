@@ -2,6 +2,16 @@
 #include "Ghost.h"
 #include "InGameManager.h"
 
+// 생성자
+// 헤더랑 따로 한 이유: 헤더에서는 이 클래스가 어떤 역할 하는지 보기 쉽게 만드는 거고 잡다한게 써있으면 복잡하니까 정의들은 cpp에다가 풀어놓는다.
+Ghost::Ghost() {
+	this->type = ObjectType::GHOST;
+}
+
+Ghost::Ghost(Vector3 pos) {
+	this->position = pos;
+}
+
 void Ghost::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
 	glm::mat4 TR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 Rz = glm::mat4(1.0f); //--- rotation matrix

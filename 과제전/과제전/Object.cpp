@@ -30,5 +30,5 @@ Vector4 Object::GetBoundingBox() {
 }
 
 void Object::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
-	cout << "draw" << endl;
+    cout << "DrawObject : Object" << endl;
 }

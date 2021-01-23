@@ -6,9 +6,7 @@ class Ghost : public DynamicObject
 private:
 
 public:
-	Ghost() {
-		this->type = ObjectType::GHOST;
-		this->position = Vector3(15,0,0);
-	}
+	Ghost();
+	Ghost(Vector3 pos);
 	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
 };

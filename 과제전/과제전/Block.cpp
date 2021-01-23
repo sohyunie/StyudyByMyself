@@ -3,6 +3,7 @@
 #include "InGameManager.h"
 
 void Block::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
+	//cout << "DrawObject : Block" << endl; 
 	glm::mat4 TR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 Rz = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 Tx = glm::mat4(1.0f); //--- transformation matrix

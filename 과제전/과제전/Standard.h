@@ -30,7 +30,10 @@ const int MAX_VAO_TYPE = 5;
 #define LIGHT_COLOR		glm::vec3(1.0, 1.0, 1.0)
 
 #define FILE_NAME		"sphere.obj"
+#define BEAD_FILE_NAME	"bead.obj"
+#define POWERBEAD_FILE_NAME	"powerbead.obj"
 
+#define MAP_SIZE 30
 
 struct ObjData {
 	float* vPosData;	// 값이 하나만 있어도 되는 건 그냥 변수로/ 아니고 여러개가 나열되고 필요한 것들은 *로 받는다.
@@ -75,12 +78,37 @@ struct Vector4 {
     }
 };
 
+
+// Object 타입
 enum ObjectType {
     PLAYER,
 	BLOCK,
     BEAD,
 	GHOST,
     POWERBEAD,
+	MAP
+};
+
+// Map 타입
+enum BOARD_TYPE {
+	NONE,
+	BEAD_ITEM,
+	POWERBEAD_ITEM,
+	WALL,
+	WALL_1,
+	WALL_2,
+};
+
+struct Shape {
+	BOARD_TYPE type;
+	Vector3 color;
+	Vector3 scale;
+	Vector3 pos;
+	Vector3 dir;
+	float radius;
+	bool isAlive;
+	int hitCount = 3;
+	float speed;
 };
 
 

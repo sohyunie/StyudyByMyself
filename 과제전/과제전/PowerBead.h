@@ -8,9 +8,9 @@ public:
 	PowerBead() {
 		this->type = ObjectType::POWERBEAD;
 	}
-
-	void EatPowerBead() {
-
+	PowerBead(Vector3 position) {
+		this->position = position;
 	}
+	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
 };
 

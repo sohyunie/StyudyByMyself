@@ -48,7 +48,23 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		break;
 	case 'X':
 		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x += 20.0f, cameraPos.y, cameraPos.z));
+		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x + 20.0f, cameraPos.y, cameraPos.z));
+		break;
+	case 'y':
+		cameraPos = InGameManager::GetInstance().GetCameraPos();
+		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y - 20.0f, cameraPos.z));
+		break;
+	case 'Y':
+		cameraPos = InGameManager::GetInstance().GetCameraPos();
+		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y + 20.0f, cameraPos.z));
+		break;
+	case 'z':
+		cameraPos = InGameManager::GetInstance().GetCameraPos();
+		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z - 20.0f));
+		break;
+	case 'Z':
+		cameraPos = InGameManager::GetInstance().GetCameraPos();
+		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z + 20.0f));
 		break;
 	}
 

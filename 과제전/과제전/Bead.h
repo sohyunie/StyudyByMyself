@@ -8,7 +8,8 @@ public:
 	Bead() {
 		this->type = ObjectType::BEAD;
 	}
-	void EatBead() {
-
+	Bead(Vector3 position) {
+		this->position = position;
 	}
+	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
 };

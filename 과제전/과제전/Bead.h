@@ -9,7 +9,8 @@ public:
 		this->type = ObjectType::BEAD;
 	}
 	Bead(Vector3 position) {
+		this->type = ObjectType::BEAD;
 		this->position = position;
 	}
-	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
+	virtual void DrawObject(GLuint s_program) override;
 };

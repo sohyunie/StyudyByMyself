@@ -9,10 +9,11 @@ Ghost::Ghost() {
 }
 
 Ghost::Ghost(Vector3 pos) {
+	this->type = ObjectType::GHOST;
 	this->position = pos;
 }
 
-void Ghost::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
+void Ghost::DrawObject(GLuint s_program) {
 	glm::mat4 TR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 Rz = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 Tx = glm::mat4(1.0f); //--- transformation matrix
@@ -49,7 +50,7 @@ void Ghost::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);
 
 	// 사용할 VAO 불러오기
-	glBindVertexArray(VAO);
+	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->type));
 	// 삼각형 그리기
-	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, InGameManager::GetInstance().GetObjData(this->type)->indexCount, GL_UNSIGNED_INT, 0);
 }

@@ -10,7 +10,7 @@ public:
 		this->position = Vector3(20, 20, 0);
 	}
 
-	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
+	virtual void DrawObject(GLuint s_program) override;
 
 	Vector3 GetPlayerPos() { return this->position; }
 	void SetPlayerPos(Vector3 playerPos) { this->position = playerPos; }

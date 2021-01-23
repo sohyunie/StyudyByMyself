@@ -29,6 +29,6 @@ Vector4 Object::GetBoundingBox() {
     return Vector4(position.x - radius, position.z - radius, position.x + radius, position.z + radius);
 }
 
-void Object::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
+void Object::DrawObject(GLuint s_program) {
     cout << "DrawObject : Object" << endl;
 }

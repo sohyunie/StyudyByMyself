@@ -2,7 +2,7 @@
 #include "InGameManager.h"
 #include "Bead.h"
 
-GLvoid Bead::DrawObject(GLuint s_program, GLuint VAO, int indexcCount) {
+GLvoid Bead::DrawObject(GLuint s_program) {
 	glm::mat4 TR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 Rz = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 Tx = glm::mat4(1.0f); //--- transformation matrix
@@ -38,8 +38,9 @@ GLvoid Bead::DrawObject(GLuint s_program, GLuint VAO, int indexcCount) {
 	int ViewLocation = glGetUniformLocation(s_program, "g_cameraPos");
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);
 
+
 	// 사용할 VAO 불러오기
-	glBindVertexArray(VAO);
+	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->type));
 	// 삼각형 그리기
-	glDrawElements(GL_TRIANGLES, indexcCount, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, InGameManager::GetInstance().GetObjData(this->type)->indexCount, GL_UNSIGNED_INT, 0);
 }

@@ -32,6 +32,7 @@ const int MAX_VAO_TYPE = 5;
 #define FILE_NAME		"sphere.obj"
 #define BEAD_FILE_NAME	"bead.obj"
 #define POWERBEAD_FILE_NAME	"powerbead.obj"
+#define CUBE_FILE_NAME	"box1.obj"
 
 #define MAP_SIZE 30
 
@@ -82,7 +83,7 @@ struct Vector4 {
 // Object е╦ют
 enum ObjectType {
     PLAYER,
-	BLOCK,
+	WALL,
     BEAD,
 	GHOST,
     POWERBEAD,
@@ -94,7 +95,7 @@ enum BOARD_TYPE {
 	NONE,
 	BEAD_ITEM,
 	POWERBEAD_ITEM,
-	WALL,
+	WALL_0,
 	WALL_1,
 	WALL_2,
 };

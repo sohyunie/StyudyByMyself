@@ -8,7 +8,7 @@ public:
 	StaticObject() {
 
 	}
-	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexCount) override {
+	virtual void DrawObject(GLuint s_program) override {
 		//cout << "DrawObject : StaticObject" << endl;
 	}
 };

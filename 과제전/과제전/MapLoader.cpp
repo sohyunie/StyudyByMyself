@@ -53,7 +53,7 @@ GLvoid MapLoader::Loadfile(int map)
                 case BOARD_TYPE::NONE:
                     boardShape[i][j] = new Block(position);
                     break;
-                case BOARD_TYPE::WALL:
+                case BOARD_TYPE::WALL_0:
                     boardShape[i][j] = new Block(position);
                     break;
                 case BOARD_TYPE::BEAD_ITEM:
@@ -78,10 +78,10 @@ GLvoid MapLoader::Loadfile(int map)
     return;
 }
 
-GLvoid MapLoader::DrawMap(GLuint s_program, GLuint VAO, int indexCount) { 
+GLvoid MapLoader::DrawMap(GLuint s_program) { 
     for (int i = 0; i < MAP_SIZE; ++i) {
         for (int j = 0; j < MAP_SIZE; ++j) {
-            this->boardShape[i][j]->DrawObject(s_program, VAO, indexCount);
+            this->boardShape[i][j]->DrawObject(s_program);
         }
     }
 }

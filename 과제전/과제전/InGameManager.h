@@ -19,7 +19,7 @@ private:
     Block* block;
     Block* block2;
     Ghost* ghost;
-    ObjData* gobj[MAX_VAO_TYPE];
+    ObjData* objData[MAX_VAO_TYPE];
     Player* player;
     MapLoader* map;
     Bead* bead;
@@ -51,10 +51,13 @@ public:
     glm::vec3 GetCameraUp() { return this->cameraUp; }
     void SetCamera(glm::vec3 camera) { this->cameraPos = camera; }; // set은 void / return타입이 없어도됨
 
-
+    
     Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
     MapLoader* LoadMap() { return this->map; }
     GLvoid DrawMap(){}
+
+    GLint GetVAO(ObjectType type) { return this->VAO[type]; }
+    ObjData* GetObjData(ObjectType type) { return this->objData[type]; }
 protected:
 
 };

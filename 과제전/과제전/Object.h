@@ -8,7 +8,7 @@ private:
 
 public:
 	Object() { }
-	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexCount);
+	virtual void DrawObject(GLuint s_program);
 	bool CollisionCheck(Object type);
 	Vector4 GetBoundingBox();
 	Vector3 GetPosition() { return position; }

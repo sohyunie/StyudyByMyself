@@ -6,12 +6,12 @@ class Block : public StaticObject
 private:
 public:
 	Block() {
-		this->type = ObjectType::BLOCK;
+		this->type = ObjectType::WALL;
 	}
 	Block(Vector3 pos) {
-		this->type = ObjectType::BLOCK;
+		this->type = ObjectType::WALL;
 		this->position = pos; 
 	}
 
-	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexCount) override;
+	virtual void DrawObject(GLuint s_program) override;
 };

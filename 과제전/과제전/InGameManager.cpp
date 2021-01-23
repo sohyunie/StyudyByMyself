@@ -95,40 +95,48 @@ GLvoid InGameManager::InitBuffer() {
 	glGenBuffers(3, this->VBO[GHOST]);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[GHOST][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[GHOST]->vertexCount * sizeof(float) * 3, this->gobj[GHOST]->vPosData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[GHOST]->vertexCount * sizeof(float) * 3, this->objData[GHOST]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[GHOST][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[GHOST]->vertexCount * sizeof(float) * 3, this->gobj[GHOST]->vNormalData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[GHOST]->vertexCount * sizeof(float) * 3, this->objData[GHOST]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[GHOST][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[GHOST]->vertexCount * sizeof(float) * 2, this->gobj[GHOST]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[GHOST]->vertexCount * sizeof(float) * 2, this->objData[GHOST]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
 	glGenBuffers(1, &this->EBO[GHOST]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[GHOST]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->gobj[GHOST]->indexCount * sizeof(int), this->gobj[GHOST]->indexData, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[GHOST]->indexCount * sizeof(int), this->objData[GHOST]->indexData, GL_STATIC_DRAW);
 
 
 	// BLOCK
-	glGenVertexArrays(1, &this->VAO[BLOCK]); //--- VAO 를 지정하고 할당하기
-	glBindVertexArray(this->VAO[BLOCK]); //--- VAO를 바인드하기
-	glGenBuffers(2, &this->VBO[BLOCK][0]); //--- 2개의 VBO를 지정하고 할당하기
-	//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
-	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BLOCK][0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(blockVertex), blockVertex, GL_STATIC_DRAW);
-	// 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	// attribute 인덱스 0번을 사용가능하게 함
+	glGenVertexArrays(1, &this->VAO[WALL]);
+	glBindVertexArray(this->VAO[WALL]);
+	glGenBuffers(3, this->VBO[WALL]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[WALL][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[WALL]->vertexCount * sizeof(float) * 3, this->objData[WALL]->vPosData, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
-	// 색상값을 attribute 인덱스 1번에 명시한다
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	// attribute 인덱스 1번을 사용 가능하게 함.
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[WALL][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[WALL]->vertexCount * sizeof(float) * 3, this->objData[WALL]->vNormalData, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[WALL][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[WALL]->vertexCount * sizeof(float) * 2, this->objData[WALL]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
+	glEnableVertexAttribArray(2);
+
+	glGenBuffers(1, &this->EBO[WALL]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[WALL]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[WALL]->indexCount * sizeof(int), this->objData[WALL]->indexData, GL_STATIC_DRAW);
 
 
 	// BEAD
@@ -137,23 +145,23 @@ GLvoid InGameManager::InitBuffer() {
 	glGenBuffers(3, this->VBO[BEAD]);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BEAD][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[BEAD]->vertexCount * sizeof(float) * 3, this->gobj[BEAD]->vPosData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BEAD]->vertexCount * sizeof(float) * 3, this->objData[BEAD]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BEAD][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[BEAD]->vertexCount * sizeof(float) * 3, this->gobj[BEAD]->vNormalData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BEAD]->vertexCount * sizeof(float) * 3, this->objData[BEAD]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BEAD][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[BEAD]->vertexCount * sizeof(float) * 2, this->gobj[BEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BEAD]->vertexCount * sizeof(float) * 2, this->objData[BEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
 	glGenBuffers(1, &this->EBO[BEAD]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[BEAD]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->gobj[BEAD]->indexCount * sizeof(int), this->gobj[BEAD]->indexData, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[BEAD]->indexCount * sizeof(int), this->objData[BEAD]->indexData, GL_STATIC_DRAW);
 
 
 
@@ -163,31 +171,31 @@ GLvoid InGameManager::InitBuffer() {
 	glGenBuffers(3, this->VBO[POWERBEAD]);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[POWERBEAD][0]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[POWERBEAD]->vertexCount * sizeof(float) * 3, this->gobj[POWERBEAD]->vPosData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[POWERBEAD]->vertexCount * sizeof(float) * 3, this->objData[POWERBEAD]->vPosData, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[POWERBEAD][1]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[POWERBEAD]->vertexCount * sizeof(float) * 3, this->gobj[POWERBEAD]->vNormalData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[POWERBEAD]->vertexCount * sizeof(float) * 3, this->objData[POWERBEAD]->vNormalData, GL_STATIC_DRAW);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[POWERBEAD][2]);
-	glBufferData(GL_ARRAY_BUFFER, this->gobj[POWERBEAD]->vertexCount * sizeof(float) * 2, this->gobj[POWERBEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[POWERBEAD]->vertexCount * sizeof(float) * 2, this->objData[POWERBEAD]->vTextureCoordinateData, GL_STATIC_DRAW);
 	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
 	glEnableVertexAttribArray(2);
 
 	glGenBuffers(1, &this->EBO[POWERBEAD]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[POWERBEAD]);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->gobj[POWERBEAD]->indexCount * sizeof(int), this->gobj[POWERBEAD]->indexData, GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[POWERBEAD]->indexCount * sizeof(int), this->objData[POWERBEAD]->indexData, GL_STATIC_DRAW);
 }
 
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
 	
-	this->ghost->DrawObject(s_program, this->VAO[GHOST], this->gobj[GHOST]->indexCount);
-	this->player->DrawObject(s_program, this->VAO[PLAYER], 36);
-	//this->map->DrawMap(s_program, this->VAO, 36);
+	this->ghost->DrawObject(s_program);
+	this->player->DrawObject(s_program);
+	this->map->DrawMap(s_program);
 	//this->bead->DrawObject(s_program, this->VAO[BEAD], this->gobj[BEAD]->indexCount);
 	//this->powerBead->DrawObject(s_program, this->VAO[POWERBEAD], this->gobj[POWERBEAD]->indexCount);
 }
@@ -213,16 +221,20 @@ GLvoid InGameManager::InitObject()
 	this->block = new Block(Vector3(0, 0, 0));
 	this->block2 = new Block(Vector3(10.0, 0, 0));
 	this->ghost = new Ghost(Vector3(20.0, 0, 0));
-	this->gobj[GHOST] = new ObjData();
-	this->gobj[BEAD] = new ObjData();
-	this->gobj[POWERBEAD] = new ObjData();
+	this->objData[PLAYER] = new ObjData();
+	this->objData[GHOST] = new ObjData();
+	this->objData[BEAD] = new ObjData();
+	this->objData[POWERBEAD] = new ObjData();
+	this->objData[WALL] = new ObjData();
 	this->player = new Player();
 	this->map = new MapLoader(0);
 	this->bead = new Bead(Vector3(-10.0,0.0,0.0));
 	this->powerBead = new PowerBead(Vector3(-20.0,0.0,0.0));
-	ReadObj(FILE_NAME, this->gobj[GHOST]->vPosData, this->gobj[GHOST]->vNormalData, this->gobj[GHOST]->vTextureCoordinateData, this->gobj[GHOST]->indexData, this->gobj[GHOST]->vertexCount, this->gobj[GHOST]->indexCount);
-	ReadObj(BEAD_FILE_NAME, this->gobj[BEAD]->vPosData, this->gobj[BEAD]->vNormalData, this->gobj[BEAD]->vTextureCoordinateData, this->gobj[BEAD]->indexData, this->gobj[BEAD]->vertexCount, this->gobj[BEAD]->indexCount);
-	ReadObj(POWERBEAD_FILE_NAME, this->gobj[POWERBEAD]->vPosData, this->gobj[POWERBEAD]->vNormalData, this->gobj[POWERBEAD]->vTextureCoordinateData, this->gobj[POWERBEAD]->indexData, this->gobj[POWERBEAD]->vertexCount, this->gobj[POWERBEAD]->indexCount);
+	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
+	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
+	ReadObj(POWERBEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
+	ReadObj(CUBE_FILE_NAME, this->objData[WALL]->vPosData, this->objData[WALL]->vNormalData, this->objData[WALL]->vTextureCoordinateData, this->objData[WALL]->indexData, this->objData[WALL]->vertexCount, this->objData[WALL]->indexCount);
+	ReadObj(CUBE_FILE_NAME, this->objData[PLAYER]->vPosData, this->objData[PLAYER]->vNormalData, this->objData[PLAYER]->vTextureCoordinateData, this->objData[PLAYER]->indexData, this->objData[PLAYER]->vertexCount, this->objData[PLAYER]->indexCount);
 
 	cout << "test" << endl;
 	// vBlock.push_back(Block());

@@ -2,7 +2,7 @@
 #include "Player.h"
 #include "InGameManager.h"
 
-void Player::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
+void Player::DrawObject(GLuint s_program) {
 	glm::mat4 TR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 Rz = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 Tx = glm::mat4(1.0f); //--- transformation matrix
@@ -39,7 +39,7 @@ void Player::DrawObject(GLuint s_program, GLuint VAO, int indexCount) {
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);
 
 	// 사용할 VAO 불러오기
-	glBindVertexArray(VAO);
+	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->type));
 	// 삼각형 그리기
-	glDrawArrays(GL_TRIANGLES, 0, indexCount);
+	glDrawElements(GL_TRIANGLES, InGameManager::GetInstance().GetObjData(this->type)->indexCount, GL_UNSIGNED_INT, 0);
 }

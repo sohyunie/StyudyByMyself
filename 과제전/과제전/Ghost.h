@@ -8,5 +8,5 @@ private:
 public:
 	Ghost();
 	Ghost(Vector3 pos);
-	virtual void DrawObject(GLuint s_program, GLuint VAO, int indexcCount) override;
+	virtual void DrawObject(GLuint s_program) override;
 };

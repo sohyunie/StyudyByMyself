@@ -11,5 +11,6 @@ public:
 
 	Vector3 GetPlayerPos() { return this->position; }
 	void SetPlayerPos(Vector3 playerPos) { this->position = playerPos; }
+	void SetPlayerPos(glm::vec3 playerPos) { this->position = playerPos; }
 };
 

@@ -28,7 +28,7 @@ GLvoid PowerBead::DrawObject(GLuint s_program) {
 	glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();
 	glm::vec3 cameraUp = InGameManager::GetInstance().GetCameraUp();
 
-	glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), cameraPos+cameraDirection, cameraUp);
 	glm::mat4 proj = glm::perspective(glm::radians(60.0f), WINDOW_WITDH / (float)WINDOW_HEIGHT, 0.001f, 1000.f);
 
 	unsigned int modelLocation = glGetUniformLocation(s_program, "g_modelTransform"); //--- 버텍스 세이더에서모델 변환 위치 가져오기

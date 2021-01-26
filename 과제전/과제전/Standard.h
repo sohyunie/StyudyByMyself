@@ -56,8 +56,26 @@ struct Vector3 {
 		this->z = z;
 	}
 
+	Vector3(glm::vec3 vec3) {
+		this->x = vec3.x;
+		this->y = vec3.y;
+		this->z = vec3.z;
+	}
+
 	Vector3 operator+ (Vector3 value) {
 		return Vector3(x + value.x, y + value.y, z + value.z);
+	}
+
+	Vector3 operator- (Vector3 value) {
+		return Vector3(x - value.x, y - value.y, z - value.z);
+	}
+
+	glm::vec3 glmvec3() {
+		return glm::vec3();
+	}
+
+	glm::vec3 GetPlayerGlmVec3(Vector3 pos) {
+		return glm::vec3(pos.x , pos.y, pos.z);
 	}
 
 	glm::vec3 GetGlmVec3() {

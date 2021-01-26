@@ -40,62 +40,78 @@ GLvoid Reshape(int w, int h)
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	switch (key)
-	{
-	case 'x':
-		glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x - 20.0f, cameraPos.y, cameraPos.z));
-		break;
-	case 'X':
-		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x + 20.0f, cameraPos.y, cameraPos.z));
-		break;
-	case 'y':
-		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y - 20.0f, cameraPos.z));
-		break;
-	case 'Y':
-		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y + 20.0f, cameraPos.z));
-		break;
-	case 'z':
-		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z - 20.0f));
-		break;
-	case 'Z':
-		cameraPos = InGameManager::GetInstance().GetCameraPos();
-		InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z + 20.0f));
-		break;
-	}
+	//float cameraSpeed = 0.05f;
+	//Vector3 playerPos;
+	//switch (key)
+	//{
+	//case 'x':
+	//	glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
+	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x - 20.0f, cameraPos.y, cameraPos.z));
+	//	break;
+	//case 'X':
+	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
+	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x + 20.0f, cameraPos.y, cameraPos.z));
+	//	break;
+	//case 'y':
+	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
+	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y - 20.0f, cameraPos.z));
+	//	break;
+	//case 'Y':
+	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
+	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y + 20.0f, cameraPos.z));
+	//	break;
+	//case 'z':
+	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
+	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z - 20.0f));
+	//	break;
+	//case 'Z':
+	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
+	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z + 20.0f));
+	//	break;
+	//}
 
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
 void processSpecialKeys(int key, int x, int y)
 {
 	Vector3 playerPos = Vector3();
+	glm::vec3 playerDir = Vector3().glmvec3();
 	switch (key)
 	{
 	case GLUT_KEY_DOWN:
 		cout << "downµÊ?" << endl;
 		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
 		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(0.0, 0.0, -2.0));
+		InGameManager::GetInstance().SetCameraPos(playerPos.GetGlmVec3());
+		playerDir = InGameManager::GetInstance().GetCameraDirection();
+		InGameManager::GetInstance().SetCameraDirection(playerDir);
 		break;
 
 	case GLUT_KEY_UP:
 		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
 		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(0.0, 0.0, 2.0));
-
+		InGameManager::GetInstance().SetCameraPos(playerPos.GetGlmVec3());
+		playerDir = InGameManager::GetInstance().GetCameraDirection();
+		InGameManager::GetInstance().SetCameraDirection(playerDir);
 		break;
 
 	case GLUT_KEY_LEFT:
 		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
-		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(2.0, 0.0, 0.0));
+		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + glm::normalize(glm::cross(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0))));
+		InGameManager::GetInstance().SetCameraPos(playerPos.GetGlmVec3());
+		playerDir = InGameManager::GetInstance().GetCameraDirection();
+		InGameManager::GetInstance().SetCameraDirection(playerDir);
+
+
 		break;
 
 	case GLUT_KEY_RIGHT:
 		playerPos = InGameManager::GetInstance().GetPlayer()->GetPlayerPos();
-		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos + Vector3(-2.0, 0.0, 0.0));
+		InGameManager::GetInstance().GetPlayer()->SetPlayerPos(playerPos - glm::normalize(glm::cross(glm::vec3(0.0, 0.0, -1.0), glm::vec3(0.0, 1.0, 0.0))));
+		InGameManager::GetInstance().SetCameraPos(playerPos.GetGlmVec3());
+		playerDir = InGameManager::GetInstance().GetCameraDirection();
+		InGameManager::GetInstance().SetCameraDirection(playerDir);
 		break;
 	}
 

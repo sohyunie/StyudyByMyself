@@ -236,8 +236,8 @@ GLvoid InGameManager::InitObject()
 	this->objData[WALL] = new ObjData();
 	this->player = new Player();
 	this->map = new MapLoader(0);
-	this->bead = new Bead(Vector3(-10.0,0.0,0.0));
-	this->powerBead = new PowerBead(Vector3(-20.0,0.0,0.0));
+	this->bead = new Bead();
+	this->powerBead = new PowerBead();
 	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
 	ReadObj(POWERBEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);

@@ -33,7 +33,7 @@ void Block::DrawObject(GLuint s_program) {
 	unsigned int modelLocation = glGetUniformLocation(s_program, "g_modelTransform"); //--- 버텍스 세이더에서모델 변환 위치 가져오기
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(STR)); //--- modelTransform 변수에 변환 값 적용하기
 
-	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
+	view = glm::lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
 	unsigned int viewLocation = glGetUniformLocation(s_program, "g_view");	// 버텍스 사이에서 viewTransform 변수위치
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);	// viewTransform 변수에 변환값 적용하기
 

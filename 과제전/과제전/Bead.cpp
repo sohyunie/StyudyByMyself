@@ -9,7 +9,7 @@ Bead::Bead() {
 Bead::Bead(Vector3 pos) {
 	this->type = ObjectType::BEAD;
 	this->position = position;
-	this->scale = Vector3(0.5, 0.5, 0.5);
+	this->scale = Vector3(10.5, 10.5, 10.5);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 }
 
@@ -19,7 +19,7 @@ GLvoid Bead::DrawObject(GLuint s_program) {
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 S = glm::mat4(1.0f);
 	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
-	R = glm::rotate(R, glm::radians(45.0f), this->scale.GetGlmVec3()); //--- z축에대하여 회전
+	R = glm::rotate(R, glm::radians(45.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
 	STR = R * T * S; //--- 합성 변환 행렬: translate -> rotate
 
@@ -27,7 +27,7 @@ GLvoid Bead::DrawObject(GLuint s_program) {
 	glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();
 	glm::vec3 cameraUp = InGameManager::GetInstance().GetCameraUp();
 
-	glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), cameraPos + cameraDirection, cameraUp);
 	glm::mat4 proj = glm::perspective(glm::radians(60.0f), WINDOW_WITDH / (float)WINDOW_HEIGHT, 0.001f, 1000.f);
 
 	unsigned int modelLocation = glGetUniformLocation(s_program, "g_modelTransform"); //--- 버텍스 세이더에서모델 변환 위치 가져오기

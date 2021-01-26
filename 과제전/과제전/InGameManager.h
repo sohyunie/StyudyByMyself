@@ -24,9 +24,10 @@ private:
     MapLoader* map;
     Bead* bead;
     PowerBead* powerBead;
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -25.0f);
+    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+    glm::vec3 offset = glm::vec3(0.0f, 15.5f, 0.0f); // 카메라 오차범위계산 눈은 위에 달림
     float degreeCameraRotate = 0.0f;
     float degreeLightPos = 0.0f;
     bool isDrawFill = true;
@@ -49,8 +50,9 @@ public:
     glm::vec3 GetCameraPos() { return this->cameraPos; }
     glm::vec3 GetCameraDirection() { return this->cameraDirection; }
     glm::vec3 GetCameraUp() { return this->cameraUp; }
-    void SetCamera(glm::vec3 camera) { this->cameraPos = camera; }; // set은 void / return타입이 없어도됨
-
+    void SetCameraPos(glm::vec3 camera) { this->cameraPos = camera + offset; }; // set은 void / return타입이 없어도됨
+    void SetDegreeCameraRotate(float rotate) { this->degreeCameraRotate = rotate; }
+    void SetCameraDirection(glm::vec3 dir) {   this->cameraDirection = dir; }
     
     Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
     MapLoader* LoadMap() { return this->map; }

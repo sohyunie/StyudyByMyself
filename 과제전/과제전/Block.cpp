@@ -2,14 +2,27 @@
 #include "Block.h"
 #include "InGameManager.h"
 
+Block::Block(){
+	this->type = ObjectType::WALL;
+}
+
+Block::Block(Vector3 pos) {
+	this->type = ObjectType::WALL;
+	this->position = pos;	// position도 그냥 생성자에서 인자로 안받아오고 여기서 설정하면 안되나..? ingame에서 만들 때부터 넣어주는 게 아니라
+	this->scale = Vector3(2.0, 2.0, 2.0);
+	this->rotate = Vector3(0.0, 1.0, 0.0);
+}
+
 void Block::DrawObject(GLuint s_program) {
 	//cout << "DrawObject : Block" << endl; 
-	glm::mat4 TR = glm::mat4(1.0f); //--- transformation matrix
-	glm::mat4 Rz = glm::mat4(1.0f); //--- rotation matrix
-	glm::mat4 Tx = glm::mat4(1.0f); //--- transformation matrix
-	Tx = glm::translate(Tx, glm::vec3(this->position.x, this->position.y, this->position.z)); //--- x축으로 translation
-	Rz = glm::rotate(Rz, glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f)); //--- z축에대하여 회전
-	TR = Rz * Tx; //--- 합성 변환 행렬: translate -> rotate
+	glm::mat4 STR = glm::mat4(1.0f); //--- transformation matrix
+	glm::mat4 R = glm::mat4(1.0f); //--- rotation matrix
+	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
+	glm::mat4 S = glm::mat4(1.0f); 
+	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
+	R = glm::rotate(R, glm::radians(45.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
+	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
+	STR = R * T * S; //--- 합성 변환 행렬: translate -> rotate
 
 	glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
 	glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();
@@ -18,7 +31,7 @@ void Block::DrawObject(GLuint s_program) {
 	glm::mat4 projection = glm::perspective(glm::radians(60.0f), WINDOW_WITDH / (float)WINDOW_HEIGHT, 0.001f, 1000.f);
 
 	unsigned int modelLocation = glGetUniformLocation(s_program, "g_modelTransform"); //--- 버텍스 세이더에서모델 변환 위치 가져오기
-	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(TR)); //--- modelTransform 변수에 변환 값 적용하기
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(STR)); //--- modelTransform 변수에 변환 값 적용하기
 
 	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
 	unsigned int viewLocation = glGetUniformLocation(s_program, "g_view");	// 버텍스 사이에서 viewTransform 변수위치

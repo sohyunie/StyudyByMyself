@@ -50,23 +50,17 @@ GLvoid MapLoader::Loadfile(int map)
 
                 Vector3 position = Vector3((i * 7.5f - 35), 0, (j * 7.5f - 35));
                 switch (type) {
-                case BOARD_TYPE::NONE:
-                    boardShape[i][j] = new Block(position);
-                    break;
-                case BOARD_TYPE::WALL_0:
-                    boardShape[i][j] = new Block(position);
-                    break;
                 case BOARD_TYPE::BEAD_ITEM:
                     boardShape[i][j] = new Bead(position);
                     break;
                 case BOARD_TYPE::POWERBEAD_ITEM:
-                    boardShape[i][j] = new PowerBead(position);
+                    boardShape[i][j] = new Bead(position);
                     break;
-                case BOARD_TYPE::WALL_1:
+                case BOARD_TYPE::WALL_0:
                     boardShape[i][j] = new Block(position);
                     break;
-                case BOARD_TYPE::WALL_2:
-                    boardShape[i][j] = new Block(position);
+                case BOARD_TYPE::NONE:
+                    boardShape[i][j] = new Bead(position);
                     break;
                 }
             }

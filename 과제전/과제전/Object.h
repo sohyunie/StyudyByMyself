@@ -16,6 +16,7 @@ public:
 protected:
 	Vector3 position;
 	Vector3 scale;
+	Vector3 rotate;
 	ObjectType type;
 	float radius; // bbox¿ß«‘!
 };

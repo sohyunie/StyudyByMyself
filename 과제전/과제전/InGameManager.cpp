@@ -73,20 +73,28 @@ GLuint s_program;
 GLvoid InGameManager::InitBuffer() {
 	cout << "InitBuffer InGameManager" << endl;
 	// PLAYER
-	glGenVertexArrays(1, &this->VAO[PLAYER]); //--- VAO 를 지정하고 할당하기
-	glBindVertexArray(this->VAO[PLAYER]); //--- VAO를 바인드하기
-	glGenBuffers(2, &this->VBO[PLAYER][0]); //--- 2개의 VBO를 지정하고 할당하기
-	//--- 1번째 VBO를 활성화하여 바인드하고, 버텍스 속성 (좌표값)을 저장
+	glGenVertexArrays(1, &this->VAO[PLAYER]);
+	glBindVertexArray(this->VAO[PLAYER]);
+	glGenBuffers(3, this->VBO[PLAYER]);
+
 	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[PLAYER][0]);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(blockVertex), blockVertex, GL_STATIC_DRAW);
-	// 좌표값을 attribute 인덱스 0번에 명시한다: 버텍스 당 3* float
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	// attribute 인덱스 0번을 사용가능하게 함
+	glBufferData(GL_ARRAY_BUFFER, this->objData[PLAYER]->vertexCount * sizeof(float) * 3, this->objData[PLAYER]->vPosData, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(0);
-	// 색상값을 attribute 인덱스 1번에 명시한다
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-	// attribute 인덱스 1번을 사용 가능하게 함.
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[PLAYER][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[PLAYER]->vertexCount * sizeof(float) * 3, this->objData[PLAYER]->vNormalData, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
 	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[PLAYER][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[PLAYER]->vertexCount * sizeof(float) * 2, this->objData[PLAYER]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
+	glEnableVertexAttribArray(2);
+
+	glGenBuffers(1, &this->EBO[PLAYER]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[PLAYER]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[PLAYER]->indexCount * sizeof(int), this->objData[PLAYER]->indexData, GL_STATIC_DRAW);
 
 
 	// GHOST

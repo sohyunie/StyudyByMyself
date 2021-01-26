@@ -5,12 +5,7 @@ class Bead : public StaticObject
 private:
 
 public:
-	Bead() {
-		this->type = ObjectType::BEAD;
-	}
-	Bead(Vector3 position) {
-		this->type = ObjectType::BEAD;
-		this->position = position;
-	}
+	Bead();
+	Bead(Vector3 pos);
 	virtual void DrawObject(GLuint s_program) override;
 };

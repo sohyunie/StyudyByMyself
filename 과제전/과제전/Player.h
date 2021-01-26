@@ -5,10 +5,7 @@ class Player : public DynamicObject
 private:
 
 public:
-	Player() {
-		this->type = ObjectType::PLAYER;
-		this->position = Vector3(20, 20, 0);
-	}
+	Player();
 
 	virtual void DrawObject(GLuint s_program) override;
 

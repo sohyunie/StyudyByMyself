@@ -55,8 +55,13 @@ struct Vector3 {
 		this->y = y;
 		this->z = z;
 	}
+
 	Vector3 operator+ (Vector3 value) {
 		return Vector3(x + value.x, y + value.y, z + value.z);
+	}
+
+	glm::vec3 GetGlmVec3() {
+		return glm::vec3(this->x, this->y, this->z);
 	}
 
 	Vector3() {}
@@ -92,12 +97,10 @@ enum ObjectType {
 
 // Map е╦ют
 enum BOARD_TYPE {
-	NONE,
 	BEAD_ITEM,
 	POWERBEAD_ITEM,
 	WALL_0,
-	WALL_1,
-	WALL_2,
+	NONE
 };
 
 struct Shape {

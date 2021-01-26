@@ -25,7 +25,7 @@ private:
     Bead* bead;
     PowerBead* powerBead;
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, -25.0f);
-    glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 1.0f);
+    glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     float degreeCameraRotate = 0.0f;
     float degreeLightPos = 0.0f;

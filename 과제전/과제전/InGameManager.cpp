@@ -67,6 +67,25 @@ void make_fragmentShaders()
 	}
 }
 
+void InGameManager::CalculateTime() {
+	this->inGameTime += this->deltaTime;
+}
+
+void InGameManager::computeDir() {
+	this->player->angle += this->player->deltaAngle;
+	lx = sin(this->player->angle);
+	lz = -cos(this->player->angle);
+}
+
+void InGameManager::computePos() {
+	InGameManager::GetInstance().GetPlayer()->ComputePos(this->player->deltaMove, this->lx, this->lz);
+}
+
+void InGameManager::CameraSetting() {
+	Vector3 dir = Vector3(this->player->GetPosition().x + lx, 0, this->player->GetPosition().z + lz);
+	this->cameraDirection = dir.GetGlmVec3();
+	this->cameraPos = this->player->GetPosition().GetGlmVec3();
+}
 
 GLuint s_program;
 
@@ -208,6 +227,13 @@ GLvoid InGameManager::DrawScene() {
 	//this->powerBead->DrawObject(s_program, this->VAO[POWERBEAD], this->gobj[POWERBEAD]->indexCount);
 }
 
+float InGameManager::GetTime() {
+	currentFrame = glutGet(GLUT_ELAPSED_TIME);
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+	return lastFrame;
+}
+
 GLvoid InGameManager::InitShader() {
 	cout << "InitShader GameManager" << endl;
 	make_vertexShaders();
@@ -226,9 +252,9 @@ GLvoid InGameManager::InitShader() {
 
 GLvoid InGameManager::InitObject() 
 {
-	this->block = new Block(Vector3(0, 0, 0));
-	this->block2 = new Block(Vector3(10.0, 0, 0));
-	this->ghost = new Ghost(Vector3(20.0, 0, 0));
+	//this->block = new Block(Vector3(0, 0, 0));
+	//this->block2 = new Block(Vector3(10.0, 0, 0));
+	this->ghost = new Ghost(Vector3(0.0, 0, 0));
 	this->objData[PLAYER] = new ObjData();
 	this->objData[GHOST] = new ObjData();
 	this->objData[BEAD] = new ObjData();
@@ -238,6 +264,7 @@ GLvoid InGameManager::InitObject()
 	this->map = new MapLoader(0);
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
+	InGameManager::GetInstance().SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
 	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
 	ReadObj(POWERBEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);

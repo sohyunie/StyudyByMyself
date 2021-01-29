@@ -79,3 +79,11 @@ GLvoid MapLoader::DrawMap(GLuint s_program) {
         }
     }
 }
+
+GLvoid MapLoader::DrawMapSecondFloor(GLuint s_program) {
+    for (int i = 0; i < MAP_SIZE; ++i) {
+        for (int j = 0; j < MAP_SIZE; ++j) {
+            this->boardShape[i][j]->DrawObject(s_program);
+        }
+    }
+}

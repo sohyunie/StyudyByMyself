@@ -15,7 +15,7 @@ void Player::DrawObject(GLuint s_program) {
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 S = glm::mat4(1.0f);
 	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
-	R = glm::rotate(R, glm::radians(45.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
+	R = glm::rotate(R, float(glm::radians(180 - (angle + deltaAngle) * 180.0 / 3.14)), glm::vec3(0.0, 1.0, 0.0)); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
 	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 
@@ -28,7 +28,7 @@ void Player::DrawObject(GLuint s_program) {
 	unsigned int modelLocation = glGetUniformLocation(s_program, "g_modelTransform"); //--- 버텍스 세이더에서모델 변환 위치 가져오기
 	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(STR)); //--- modelTransform 변수에 변환 값 적용하기
 
-	view = glm::lookAt(cameraPos, cameraPos + cameraDirection, cameraUp);
+	view = glm::lookAt(cameraPos, cameraDirection, cameraUp);
 	unsigned int viewLocation = glGetUniformLocation(s_program, "g_view");	// 버텍스 사이에서 viewTransform 변수위치
 	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &view[0][0]);	// viewTransform 변수에 변환값 적용하기
 
@@ -51,4 +51,10 @@ void Player::DrawObject(GLuint s_program) {
 	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->type));
 	// 삼각형 그리기
 	glDrawElements(GL_TRIANGLES, InGameManager::GetInstance().GetObjData(this->type)->indexCount, GL_UNSIGNED_INT, 0);
+}
+
+void Player::ComputePos(float deltaMove, float lx, float lz)
+{
+	this->position.x += deltaMove * lx * 0.01f;
+	this->position.z += deltaMove * lz * 0.01f;
 }

@@ -35,6 +35,7 @@ const int MAX_VAO_TYPE = 5;
 #define CUBE_FILE_NAME	"box1.obj"
 
 #define MAP_SIZE 30
+#define MAX_TIME 120
 
 struct ObjData {
 	float* vPosData;	// 값이 하나만 있어도 되는 건 그냥 변수로/ 아니고 여러개가 나열되고 필요한 것들은 *로 받는다.
@@ -133,6 +134,7 @@ struct Shape {
 	float speed;
 };
 
+//float deltaTime = 0.0f;
 
 const float blockVertex[6][6][2][3] = {
 	//--- 버텍스 속성: 좌표값(FragPos), 노말값 (Normal)

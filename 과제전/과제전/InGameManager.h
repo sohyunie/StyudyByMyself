@@ -25,12 +25,20 @@ private:
     Bead* bead;
     PowerBead* powerBead;
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-    glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, -1.0f);
+    glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.25f); 
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 offset = glm::vec3(0.0f, 15.5f, 0.0f); // 카메라 오차범위계산 눈은 위에 달림
-    float degreeCameraRotate = 0.0f;
+    
+    float degreeCameraRotate = 45.0f; // 요고야 요고 근데 얘 안쓰고 있을걸?  
     float degreeLightPos = 0.0f;
+    float deltaTime = 0.0f;
+    float lastFrame = 0.0f;
+    float currentFrame = 0.0f;
+    float additonalTime = 0.0f;
+    float inGameTime = 0.0f;
+    float angle, lx, lz = 0.0f;
     bool isDrawFill = true;
+
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -46,6 +54,15 @@ public:
 
     float GetDegreeCameraRotate() { return this->degreeCameraRotate; }
     float GetDegreeLightPos() { return this->degreeLightPos; }
+    float GetDeltaTime() { return this->deltaTime; }
+    float GetIngameTime() { return this->inGameTime; }
+    float currentTime() { return MAX_TIME - round(this->inGameTime / 100) / 10 + this->additonalTime; } //
+    float GetTime();
+    void CalculateTime();
+    void computeDir();
+    void computePos();
+    void CameraSetting();
+
     bool GetIsDrawFill() { return this->isDrawFill; }
     glm::vec3 GetCameraPos() { return this->cameraPos; }
     glm::vec3 GetCameraDirection() { return this->cameraDirection; }
@@ -53,7 +70,7 @@ public:
     void SetCameraPos(glm::vec3 camera) { this->cameraPos = camera + offset; }; // set은 void / return타입이 없어도됨
     void SetDegreeCameraRotate(float rotate) { this->degreeCameraRotate = rotate; }
     void SetCameraDirection(glm::vec3 dir) {   this->cameraDirection = dir; }
-    
+
     Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
     MapLoader* LoadMap() { return this->map; }
     GLvoid DrawMap(){}

@@ -7,10 +7,14 @@
 #include "Bead.h"
 #include "PowerBead.h"
 #include "MapLoader.h"
+//#include "Object.h"
 
 GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
 GLuint vertexShader, fragmentShader; // 세이더 객체
 InGameManager* InGameManager::instance = nullptr;	//  static은 초기화가 필요 InGameManager*: 변수 타입/ InGameManager::instance : 인게임매니저 안에 private선언되어 있는 instance를 가리킨다. 
+
+default_random_engine dre((size_t)time(NULL));
+normal_distribution <float>uidGhostLocation{ -20.0,20.0 };
 
 char* filetobuf(const char* file)
 {
@@ -82,9 +86,18 @@ void InGameManager::computePos() {
 }
 
 void InGameManager::CameraSetting() {
-	Vector3 dir = Vector3(this->player->GetPosition().x + lx, 0, this->player->GetPosition().z + lz);
-	this->cameraDirection = dir.GetGlmVec3();
-	this->cameraPos = this->player->GetPosition().GetGlmVec3();
+
+	if (this->isFPS == true) {
+		Vector3 dir = Vector3(this->player->GetPosition().x + lx, 0, this->player->GetPosition().z + lz);
+
+		this->cameraDirection = dir.GetGlmVec3();
+		this->cameraPos = this->player->GetPosition().GetGlmVec3();
+	}
+	else {
+		this->cameraDirection = this->player->GetPosition().GetGlmVec3();
+		this->cameraPos = glm::vec3(0,50,0);
+	}
+
 }
 
 GLuint s_program;
@@ -217,10 +230,18 @@ GLvoid InGameManager::InitBuffer() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[POWERBEAD]->indexCount * sizeof(int), this->objData[POWERBEAD]->indexData, GL_STATIC_DRAW);
 }
 
+Ghost* InGameManager::GetGhost() {
+	for (int i = 0; i < 20; ++i) {
+		return ghost[i];
+	}
+}
+
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
-	
-	this->ghost->DrawObject(s_program);
+	for (int i = 0; i < 20; ++i) {
+		this->ghost[i]->DrawObject(s_program);
+	}
+	//this->ghost->DrawObject(s_program);
 	this->player->DrawObject(s_program);
 	this->map->DrawMap(s_program);
 	//this->bead->DrawObject(s_program, this->VAO[BEAD], this->gobj[BEAD]->indexCount);
@@ -232,6 +253,64 @@ float InGameManager::GetTime() {
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 	return lastFrame;
+}
+
+void InGameManager::TimerFunction() {
+	ghostSpawnRunningTime += this->GetDeltaTime();
+	if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
+		ghostSpawnRunningTime = 0;
+		for (int i = 0; i < 20; i++) {
+			if (!this->ghost[i]->GetIsActive()) {
+				this->ghost[i]->SetIsActive(true);
+				break;
+			}
+		}
+	}
+
+	for (int i = 0; i < MAP_SIZE; ++i) {
+		for (int j = 0; j < MAP_SIZE; ++j) {
+			Object obj = *this->map->boardShape[i][j];
+			bool isCollision = this->player->CollisionCheck(obj);
+			if (isCollision) {
+				cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
+				switch (obj.GetType()) {
+				case ObjectType::WALL:
+					break;
+				case ObjectType::GHOST:
+					this->isGhost = true;
+					if (this->isGhost == true) {
+						player->hp = -5.0f;
+						isGhost = false;
+					}
+					cout << "HP: " << player->hp << endl;
+					break;
+				case ObjectType::BEAD:
+					if (this->EatBead == true) {
+						this->map->boardShape[i][j] = new StaticObject();
+						this->beadNumber += 1;
+						this->EatBead = false;
+					}
+					this->isBead = false;
+					cout << "beadNumber: " << this->beadNumber << endl;
+					break;
+				case ObjectType::POWERBEAD:
+					// n초 동안 무적 상태
+					obj = StaticObject();
+					break;
+				}
+			}
+		}
+	}
+
+	this->GetTime();
+	this->CalculateTime();
+
+	if (this->GetPlayer()->deltaAngle)
+		this->computeDir();
+	if (this->GetPlayer()->deltaMove)
+		this->computePos();
+
+	this->CameraSetting();
 }
 
 GLvoid InGameManager::InitShader() {
@@ -250,20 +329,27 @@ GLvoid InGameManager::InitShader() {
 	glUseProgram(s_program);
 }
 
+// 여기는 오브젝트를 클래스로 찍어내는 곳, 인스턴스화
+// + Obj 파일 정보 담아두는 코드
 GLvoid InGameManager::InitObject() 
 {
 	//this->block = new Block(Vector3(0, 0, 0));
 	//this->block2 = new Block(Vector3(10.0, 0, 0));
-	this->ghost = new Ghost(Vector3(0.0, 0, 0));
+
 	this->objData[PLAYER] = new ObjData();
 	this->objData[GHOST] = new ObjData();
 	this->objData[BEAD] = new ObjData();
 	this->objData[POWERBEAD] = new ObjData();
 	this->objData[WALL] = new ObjData();
+
 	this->player = new Player();
 	this->map = new MapLoader(0);
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
+	for (int i = 0; i < 20; ++i) {
+		this->ghost[i] = new Ghost(Vector3(uidGhostLocation(dre), 0, uidGhostLocation(dre)));
+	}
+
 	InGameManager::GetInstance().SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
 	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);

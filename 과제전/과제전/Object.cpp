@@ -26,7 +26,7 @@ bool Object::CollisionCheck(Object type) {
 
 
 Vector4 Object::GetBoundingBox() {
-    return Vector4(position.x - radius, position.z - radius, position.x + radius, position.z + radius);
+    return Vector4(position.x - boundingOffset, position.z - boundingOffset, position.x + boundingOffset, position.z + boundingOffset);
 }
 
 void Object::DrawObject(GLuint s_program) {

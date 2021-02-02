@@ -36,6 +36,7 @@ const int MAX_VAO_TYPE = 5;
 
 #define MAP_SIZE 30
 #define MAX_TIME 120
+#define GHOST_SPAWN_TIME 3 * 60 * 60
 
 struct ObjData {
 	float* vPosData;	// 값이 하나만 있어도 되는 건 그냥 변수로/ 아니고 여러개가 나열되고 필요한 것들은 *로 받는다.
@@ -71,14 +72,6 @@ struct Vector3 {
 		return Vector3(x - value.x, y - value.y, z - value.z);
 	}
 
-	glm::vec3 glmvec3() {
-		return glm::vec3();
-	}
-
-	glm::vec3 GetPlayerGlmVec3(Vector3 pos) {
-		return glm::vec3(pos.x , pos.y, pos.z);
-	}
-
 	glm::vec3 GetGlmVec3() {
 		return glm::vec3(this->x, this->y, this->z);
 	}
@@ -111,7 +104,8 @@ enum ObjectType {
     BEAD,
 	GHOST,
     POWERBEAD,
-	MAP
+	MAP,
+	ROAD,
 };
 
 // Map 타입
@@ -128,7 +122,7 @@ struct Shape {
 	Vector3 scale;
 	Vector3 pos;
 	Vector3 dir;
-	float radius;
+	float boundingOffset;
 	bool isAlive;
 	int hitCount = 3;
 	float speed;

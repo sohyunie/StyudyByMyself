@@ -9,8 +9,9 @@ Block::Block(){
 Block::Block(Vector3 pos) {
 	this->type = ObjectType::WALL;
 	this->position = pos;	// position도 그냥 생성자에서 인자로 안받아오고 여기서 설정하면 안되나..? ingame에서 만들 때부터 넣어주는 게 아니라
-	this->scale = Vector3(2.0, 2.0, 2.0);
+	this->scale = Vector3(1.0, 1.0, 1.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
+	this->boundingOffset = 1.5f;//1.8;
 }
 
 void Block::DrawObject(GLuint s_program) {
@@ -22,7 +23,7 @@ void Block::DrawObject(GLuint s_program) {
 	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
 	R = glm::rotate(R, glm::radians(45.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
-	STR = R * T * S; //--- 합성 변환 행렬: translate -> rotate
+	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 
 	glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
 	glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();

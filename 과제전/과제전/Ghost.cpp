@@ -2,6 +2,9 @@
 #include "Ghost.h"
 #include "InGameManager.h"
 
+default_random_engine dreColor((size_t)time(NULL));
+normal_distribution <float>uidColor{ 0.0,1.0 };
+
 // 생성자
 // 헤더랑 따로 한 이유: 헤더에서는 이 클래스가 어떤 역할 하는지 보기 쉽게 만드는 거고 잡다한게 써있으면 복잡하니까 정의들은 cpp에다가 풀어놓는다.
 Ghost::Ghost() {
@@ -13,9 +16,12 @@ Ghost::Ghost(Vector3 pos) {
 	this->position = pos;
 	this->scale = Vector3(2,2,2);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
+	this->color = glm::vec3(uidColor(dreColor), uidColor(dreColor), uidColor(dreColor));
 }
 
 void Ghost::DrawObject(GLuint s_program) {
+	if (this->isActive == false)
+		return;
 	glm::mat4 STR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 R = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
@@ -23,13 +29,13 @@ void Ghost::DrawObject(GLuint s_program) {
 	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
 	R = glm::rotate(R, glm::radians(45.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
-	STR = R * T * S; //--- 합성 변환 행렬: translate -> rotate
+	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 
 	glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
 	glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();
 	glm::vec3 cameraUp = InGameManager::GetInstance().GetCameraUp();
 
-	glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), cameraDirection, cameraUp);
 	glm::mat4 proj = glm::perspective(glm::radians(60.0f), WINDOW_WITDH / (float)WINDOW_HEIGHT, 0.001f, 1000.f);
 
 	unsigned int modelLocation = glGetUniformLocation(s_program, "g_modelTransform"); //--- 버텍스 세이더에서모델 변환 위치 가져오기
@@ -48,7 +54,7 @@ void Ghost::DrawObject(GLuint s_program) {
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 
 	int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
-	glUniform3f(objColorLocation, 1.0, 1.0, 1.0);
+	glUniform3f(objColorLocation, this->color.x, this->color.y, this->color.z);
 
 	int ViewLocation = glGetUniformLocation(s_program, "g_cameraPos");
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);

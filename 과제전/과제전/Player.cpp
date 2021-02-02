@@ -5,8 +5,9 @@
 Player::Player() {
 	this->type = ObjectType::PLAYER;
 	this->position = Vector3(0, 0, 0);
-	this->scale = Vector3(1.5, 1.5, 1.5);
+	this->scale = Vector3(1.0, 1.0, 1.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
+	this->boundingOffset = 1;
 }
 
 void Player::DrawObject(GLuint s_program) {

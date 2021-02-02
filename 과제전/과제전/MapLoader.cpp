@@ -60,7 +60,7 @@ GLvoid MapLoader::Loadfile(int map)
                     boardShape[i][j] = new Block(position);
                     break;
                 case BOARD_TYPE::NONE:
-                    boardShape[i][j] = new Bead(position);
+                    boardShape[i][j] = new StaticObject();
                     break;
                 }
             }

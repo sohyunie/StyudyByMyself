@@ -5,6 +5,7 @@ class Player;
 class MapLoader;
 class Bead;
 class PowerBead;
+class Object;
 
 class InGameManager
 {
@@ -18,7 +19,8 @@ private:
     //vector<Block> vBlock; // 여기서 변수 저렇게 써있자나..?! ㅇ그러면 메모리가 ㅇ우ㅛㅇ렁훙겡 웅웅ㅇ 요렇게 잡혀 그런데우웅
     Block* block;
     Block* block2;
-    Ghost* ghost;
+    Ghost* ghost[20];
+    Object* object;
     ObjData* objData[MAX_VAO_TYPE];
     Player* player;
     MapLoader* map;
@@ -37,8 +39,16 @@ private:
     float additonalTime = 0.0f;
     float inGameTime = 0.0f;
     float angle, lx, lz = 0.0f;
+    float ghostSpawnRunningTime = 0.0f;
+    glm::vec3 ghostColor = glm::vec3(0.0f, 0.0f, 0.0f);
+    int beadNumber = 0;
     bool isDrawFill = true;
-
+    bool isFPS = false;
+    bool isGhost = false;
+    bool isBead = true;
+    bool EatBead = false;
+    bool CollideBead = false;
+    bool isPowerBead = false;
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -56,12 +66,14 @@ public:
     float GetDegreeLightPos() { return this->degreeLightPos; }
     float GetDeltaTime() { return this->deltaTime; }
     float GetIngameTime() { return this->inGameTime; }
-    float currentTime() { return MAX_TIME - round(this->inGameTime / 100) / 10 + this->additonalTime; } //
+    float currentTime() { return MAX_TIME - round(this->inGameTime / 100) / 10 + this->additonalTime; }
     float GetTime();
+    bool GetPresence() { return this->isBead; }
     void CalculateTime();
     void computeDir();
     void computePos();
     void CameraSetting();
+    void TimerFunction();
 
     bool GetIsDrawFill() { return this->isDrawFill; }
     glm::vec3 GetCameraPos() { return this->cameraPos; }
@@ -70,10 +82,13 @@ public:
     void SetCameraPos(glm::vec3 camera) { this->cameraPos = camera + offset; }; // set은 void / return타입이 없어도됨
     void SetDegreeCameraRotate(float rotate) { this->degreeCameraRotate = rotate; }
     void SetCameraDirection(glm::vec3 dir) {   this->cameraDirection = dir; }
+    void SetFPS(bool isOn) { this->isFPS = isOn; }
+    Ghost* GetGhost();
 
     Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
     MapLoader* LoadMap() { return this->map; }
     GLvoid DrawMap(){}
+    bool GetFPS() { return this->isFPS; }
 
     GLint GetVAO(ObjectType type) { return this->VAO[type]; }
     ObjData* GetObjData(ObjectType type) { return this->objData[type]; }

@@ -40,37 +40,18 @@ GLvoid Reshape(int w, int h)
 
 GLvoid Keyboard(unsigned char key, int x, int y)
 {
-	//float cameraSpeed = 0.05f;
-	//Vector3 playerPos;
-	//switch (key)
-	//{
-	//case 'x':
-	//	glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
-	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x - 20.0f, cameraPos.y, cameraPos.z));
-	//	break;
-	//case 'X':
-	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
-	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x + 20.0f, cameraPos.y, cameraPos.z));
-	//	break;
-	//case 'y':
-	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
-	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y - 20.0f, cameraPos.z));
-	//	break;
-	//case 'Y':
-	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
-	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y + 20.0f, cameraPos.z));
-	//	break;
-	//case 'z':
-	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
-	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z - 20.0f));
-	//	break;
-	//case 'Z':
-	//	cameraPos = InGameManager::GetInstance().GetCameraPos();
-	//	InGameManager::GetInstance().SetCamera(glm::vec3(cameraPos.x, cameraPos.y, cameraPos.z + 20.0f));
-	//	break;
-	//}
+	float cameraSpeed = 0.05f;
+	Vector3 playerPos;
+	switch (key)
+	{
+	case '1':
+		InGameManager::GetInstance().SetFPS(true);
+	case '3':
+		InGameManager::GetInstance().SetFPS(false);
+		break;
+	}
 
-	//glutPostRedisplay();
+	glutPostRedisplay();
 }
 
 void releaseKey(int key, int x, int y) {
@@ -88,20 +69,19 @@ void releaseKey(int key, int x, int y) {
 void processSpecialKeys(int key, int x, int y)
 {
 	Vector3 playerPos = Vector3();
-	glm::vec3 playerDir = Vector3().glmvec3();
 	switch (key)
 	{
 	case GLUT_KEY_DOWN:
-		InGameManager::GetInstance().GetPlayer()->deltaMove = -1.0f * InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->deltaMove = -0.5f * InGameManager::GetInstance().GetDeltaTime();
 		break;
 	case GLUT_KEY_UP:
-		InGameManager::GetInstance().GetPlayer()->deltaMove = 1.0f * InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->deltaMove = 0.5f * InGameManager::GetInstance().GetDeltaTime();
 		break;
 	case GLUT_KEY_LEFT:
-		InGameManager::GetInstance().GetPlayer()->deltaAngle = -0.0005f *InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->deltaAngle = -0.001f *InGameManager::GetInstance().GetDeltaTime();
 		break;
 	case GLUT_KEY_RIGHT:
-		InGameManager::GetInstance().GetPlayer()->deltaAngle = 0.0005f * InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->deltaAngle = 0.001f * InGameManager::GetInstance().GetDeltaTime();
 		break;
 	}
 
@@ -109,15 +89,7 @@ void processSpecialKeys(int key, int x, int y)
 }
 
 void TimerFunction(int value) {
-	InGameManager::GetInstance().GetTime();
-	InGameManager::GetInstance().CalculateTime();
-
-	if (InGameManager::GetInstance().GetPlayer()->deltaAngle)
-		InGameManager::GetInstance().computeDir();
-	if (InGameManager::GetInstance().GetPlayer()->deltaMove)
-		InGameManager::GetInstance().computePos();
-
-	InGameManager::GetInstance().CameraSetting();
+	InGameManager::GetInstance().TimerFunction();
 
 	glutTimerFunc(10, TimerFunction, 1);
 }

@@ -239,7 +239,7 @@ Ghost* InGameManager::GetGhost() {
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
 	for (int i = 0; i < 20; ++i) {
-		this->ghost[i]->DrawObject(s_program);
+		//this->ghost[i]->DrawObject(s_program);
 	}
 	//this->ghost->DrawObject(s_program);
 	this->player->DrawObject(s_program);
@@ -255,6 +255,160 @@ float InGameManager::GetTime() {
 	return lastFrame;
 }
 
+
+Vector3 Lerp(Vector3 value1, Vector3 value2, float amount)
+{
+	Vector3 newPos = Vector3(value1 + ((Vector3)(value2 - value1) * amount));
+	//cout << newPos.x << "," << newPos.y << "," << newPos.z << "," << endl;
+	return newPos;
+}
+
+float acc = 0.f;
+bool isArrived = true; // 플레이어가 다른 칸에 도착한 그 순간! true, 그 외에는 항상 false
+
+void InGameManager::CheckDirection(bool isCollision, int i, int j) {
+	float speed = 0.003f;
+	if (isArrived && this->player->playerDirection != DIRECTION::DIR_NONE) {
+		this->player->progressDirection = this->player->playerDirection;
+		isArrived = false;
+		acc = 0;
+	}
+	//cout <<"[" << this->player->board_i << "," << this->player->board_j <<  "]"<< this->player->GetPosition().x << ", " << this->player->GetPosition().z << endl;
+
+	//cout << isArrived << endl;
+	StaticObject* target;
+	Vector3 startPos;
+	switch (player->progressDirection) {
+	case DIRECTION::UP:
+		if (player->board_i - 1 < 0) // 아에 빈 보드판으로 가지 않도록
+		{
+			break;
+		}
+		acc += this->deltaTime * speed;
+
+		startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+		target = this->map->boardShape[player->board_i - 1][player->board_j];
+		cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+
+		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			cout << "Collision!!!!!!!!!!!!" << endl;
+			if (player->GetPosition() == target->GetPosition()) {
+				player->board_i = i;
+				player->board_j = j;
+				acc = 0;
+				isArrived = true;
+				startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+				target = this->map->boardShape[player->board_i - 1][player->board_j];
+			}
+		}
+		else {
+			isArrived = false;
+		}
+		//cout << target->GetType() << endl;
+		if (!(target->GetType() == ObjectType::WALL)) {
+			player->SetPlayerPos(Lerp(startPos, target->GetPosition(), acc));
+		}
+		else {
+			acc = 0;
+			isArrived = true;
+		}
+		break;
+
+	case DIRECTION::DOWN:
+		if (player->board_i + 1 > 30) // 아에 빈 보드판으로 가지 않도록
+			break;
+		acc += this->deltaTime * speed;
+
+		startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+		target = this->map->boardShape[player->board_i + 1][player->board_j];
+		cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+
+		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			if (player->GetPosition() == target->GetPosition()) {
+				player->board_i = i;
+				player->board_j = j;
+				acc = 0;
+				isArrived = true;
+				startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+				target = this->map->boardShape[player->board_i + 1][player->board_j];
+			}
+		}
+		else {
+			isArrived = false;
+		}
+
+		if (!(target->GetType() == ObjectType::WALL)) {
+			player->SetPlayerPos(Lerp(startPos, target->GetPosition(), acc));
+		}
+		else {
+			acc = 0;
+			isArrived = true;
+		}
+		break;
+
+	case DIRECTION::LEFT:
+		if (player->board_j - 1 < 0) // 아에 빈 보드판으로 가지 않도록
+			break;
+		acc += this->deltaTime * speed;
+
+		startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+		target = this->map->boardShape[player->board_i][player->board_j - 1];
+		cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+
+		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			if (player->GetPosition() == target->GetPosition()) {
+				player->board_i = i;
+				player->board_j = j;
+				acc = 0;
+				isArrived = true;
+				target = this->map->boardShape[player->board_i][player->board_j - 1];
+				startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+			}
+		}
+		else {
+			isArrived = false;
+		}
+
+		if (!(target->GetType() == ObjectType::WALL)) {
+			player->SetPlayerPos(Lerp(startPos, target->GetPosition(), acc));
+		}
+		else {
+			acc = 0;
+			isArrived = true;
+		}
+		break;
+
+	case DIRECTION::RIGHT:
+		if (player->board_j + 1 > 31) // 아에 빈 보드판으로 가지 않도록
+			break;
+		acc += this->deltaTime * speed;
+
+		startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+		target = this->map->boardShape[player->board_i][player->board_j + 1];
+		cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+
+		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			if (player->GetPosition() == target->GetPosition()) {
+				player->board_i = i;
+				player->board_j = j;
+				acc = 0;
+				isArrived = true;
+				target = this->map->boardShape[player->board_i][player->board_j + 1];
+				startPos = this->map->boardShape[player->board_i][player->board_j]->GetPosition();
+			}
+		}
+
+		cout << target->GetType() << endl;
+		if (!(target->GetType() == ObjectType::WALL)) {
+			player->SetPlayerPos(Lerp(startPos, target->GetPosition(), acc));
+		}
+		else {
+			isArrived = true;
+		}
+		break;
+	}
+}
+
 void InGameManager::TimerFunction() {
 	ghostSpawnRunningTime += this->GetDeltaTime();
 	if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
@@ -267,12 +421,16 @@ void InGameManager::TimerFunction() {
 		}
 	}
 
+	bool isMapCollision = false;
+	int temp_i = 0;
+	int temp_j = 0;
 	for (int i = 0; i < MAP_SIZE; ++i) {
 		for (int j = 0; j < MAP_SIZE; ++j) {
 			Object obj = *this->map->boardShape[i][j];
+
 			bool isCollision = this->player->CollisionCheck(obj);
 			if (isCollision) {
-				cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
+				//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
 				switch (obj.GetType()) {
 				case ObjectType::WALL:
 					break;
@@ -282,25 +440,36 @@ void InGameManager::TimerFunction() {
 						player->hp = -5.0f;
 						isGhost = false;
 					}
-					cout << "HP: " << player->hp << endl;
+					// cout << "HP: " << player->hp << endl;
 					break;
 				case ObjectType::BEAD:
-					if (this->EatBead == true) {
-						this->map->boardShape[i][j] = new StaticObject();
-						this->beadNumber += 1;
-						this->EatBead = false;
-					}
-					this->isBead = false;
-					cout << "beadNumber: " << this->beadNumber << endl;
+					isMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+					cout << "BEAD" << endl;
+					temp_i = i;
+					temp_j = j;
+					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
+					this->beadNumber += 1;
+					// cout << "beadNumber: " << this->beadNumber << endl;
 					break;
 				case ObjectType::POWERBEAD:
+					isMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+					temp_i = i;
+					temp_j = j;
 					// n초 동안 무적 상태
 					obj = StaticObject();
+					break;
+				case ObjectType::ROAD:
+					isMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+					cout << "ROAD" << endl;
+					temp_i = i;
+					temp_j = j;
 					break;
 				}
 			}
 		}
 	}
+
+
 
 	this->GetTime();
 	this->CalculateTime();
@@ -311,6 +480,7 @@ void InGameManager::TimerFunction() {
 		this->computePos();
 
 	this->CameraSetting();
+	this->CheckDirection(isMapCollision, temp_i, temp_j);
 }
 
 GLvoid InGameManager::InitShader() {
@@ -349,8 +519,9 @@ GLvoid InGameManager::InitObject()
 	for (int i = 0; i < 20; ++i) {
 		this->ghost[i] = new Ghost(Vector3(uidGhostLocation(dre), 0, uidGhostLocation(dre)));
 	}
-
-	InGameManager::GetInstance().SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
+	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
+	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
+	this->CameraSetting();
 	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
 	ReadObj(POWERBEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
@@ -359,4 +530,5 @@ GLvoid InGameManager::InitObject()
 
 	cout << "test" << endl;
 	// vBlock.push_back(Block());
+	this->isInitComplete = true;
 }

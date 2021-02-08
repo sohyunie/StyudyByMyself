@@ -4,6 +4,7 @@
 #include "Bead.h"
 #include "PowerBead.h"
 #include "MapLoader.h"
+#include "Player.h"
 
 MapLoader::MapLoader(int map) {
     this->Loadfile(map);
@@ -60,7 +61,11 @@ GLvoid MapLoader::Loadfile(int map)
                     boardShape[i][j] = new Block(position);
                     break;
                 case BOARD_TYPE::NONE:
-                    boardShape[i][j] = new StaticObject();
+                    boardShape[i][j] = new StaticObject(position);
+                    break;
+                case BOARD_TYPE::INIT_PLAYER_POS:
+                    InGameManager::GetInstance().GetPlayer()->InitPlayerPos(i, j, position);
+                    boardShape[i][j] = new StaticObject(position);
                     break;
                 }
             }

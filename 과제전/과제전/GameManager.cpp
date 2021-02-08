@@ -27,7 +27,8 @@ GLvoid drawScene()
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	InGameManager::GetInstance().DrawScene();
-	glutSwapBuffers();                        // 화면에 출력하기
+	glutPostRedisplay();
+	glutSwapBuffers();
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_CULL_FACE);
@@ -72,16 +73,17 @@ void processSpecialKeys(int key, int x, int y)
 	switch (key)
 	{
 	case GLUT_KEY_DOWN:
-		InGameManager::GetInstance().GetPlayer()->deltaMove = -0.5f * InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
 		break;
 	case GLUT_KEY_UP:
-		InGameManager::GetInstance().GetPlayer()->deltaMove = 0.5f * InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
 		break;
 	case GLUT_KEY_LEFT:
-		InGameManager::GetInstance().GetPlayer()->deltaAngle = -0.001f *InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::LEFT;
 		break;
 	case GLUT_KEY_RIGHT:
-		InGameManager::GetInstance().GetPlayer()->deltaAngle = 0.001f * InGameManager::GetInstance().GetDeltaTime();
+		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::RIGHT;
+
 		break;
 	}
 

@@ -9,7 +9,7 @@ public:
 	DynamicObject() {
 
 	}
-	void Recognize() {
 
-	}
+	DIRECTION playerDirection = DIRECTION::DIR_NONE;
+	DIRECTION progressDirection = DIRECTION::DIR_NONE;
 };

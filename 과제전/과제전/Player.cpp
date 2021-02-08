@@ -5,9 +5,9 @@
 Player::Player() {
 	this->type = ObjectType::PLAYER;
 	this->position = Vector3(0, 0, 0);
-	this->scale = Vector3(1.0, 1.0, 1.0);
+	this->scale = Vector3(1.3, 1.3, 1.3);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
-	this->boundingOffset = 1;
+	this->boundingOffset = 1.5;
 }
 
 void Player::DrawObject(GLuint s_program) {
@@ -16,7 +16,7 @@ void Player::DrawObject(GLuint s_program) {
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 S = glm::mat4(1.0f);
 	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
-	R = glm::rotate(R, float(glm::radians(180 - (angle + deltaAngle) * 180.0 / 3.14)), glm::vec3(0.0, 1.0, 0.0)); //--- z축에대하여 회전
+	R = glm::rotate(R, 0.0f, glm::vec3(0.0, 1.0, 0.0)); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
 	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 
@@ -58,4 +58,10 @@ void Player::ComputePos(float deltaMove, float lx, float lz)
 {
 	this->position.x += deltaMove * lx * 0.01f;
 	this->position.z += deltaMove * lz * 0.01f;
+}
+
+void Player::InitPlayerPos(int i, int j, Vector3 pos) {
+	this->board_i = i;
+	this->board_j = j;
+	this->position = pos;
 }

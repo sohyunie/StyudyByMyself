@@ -7,13 +7,13 @@ bool Object::CollisionCheck(Object type) {
     bool xcollision = false;
     bool zcollision = false;
 
-    if ((mybbox.minX < otherbbox.minX && mybbox.maxX > otherbbox.minX) ||
-        ((mybbox.minX < otherbbox.maxX && mybbox.maxX > otherbbox.maxX))) {
+    if ((mybbox.minX <= otherbbox.minX && mybbox.maxX >= otherbbox.minX) ||
+        ((mybbox.minX <= otherbbox.maxX && mybbox.maxX >= otherbbox.maxX))) {
         xcollision = true;
     }
 
-    if ((mybbox.minZ < otherbbox.minZ && mybbox.maxZ > otherbbox.minZ) ||
-        ((mybbox.minZ < otherbbox.maxZ && mybbox.maxZ > otherbbox.maxZ))) {
+    if ((mybbox.minZ <= otherbbox.minZ && mybbox.maxZ >= otherbbox.minZ) ||
+        ((mybbox.minZ <= otherbbox.maxZ && mybbox.maxZ >= otherbbox.maxZ))) {
         zcollision = true;
     }
 

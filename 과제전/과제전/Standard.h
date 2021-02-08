@@ -32,7 +32,7 @@ const int MAX_VAO_TYPE = 5;
 #define FILE_NAME		"sphere.obj"
 #define BEAD_FILE_NAME	"bead.obj"
 #define POWERBEAD_FILE_NAME	"powerbead.obj"
-#define CUBE_FILE_NAME	"box1.obj"
+#define CUBE_FILE_NAME	"gamecube-logo-cube.obj"
 
 #define MAP_SIZE 30
 #define MAX_TIME 120
@@ -64,12 +64,26 @@ struct Vector3 {
 		this->z = vec3.z;
 	}
 
+	bool operator== (Vector3 value) {
+		float sameX = abs(this->x - value.x);
+		float sameY = abs(this->y - value.y);
+		float sameZ = abs(this->z - value.z);
+		float check = sameX + sameY + sameZ;
+		bool result = check < 0.6f; // 오차범위
+		// cout << check << endl;
+		return result;
+	}
+
 	Vector3 operator+ (Vector3 value) {
 		return Vector3(x + value.x, y + value.y, z + value.z);
 	}
 
 	Vector3 operator- (Vector3 value) {
 		return Vector3(x - value.x, y - value.y, z - value.z);
+	}
+
+	Vector3 operator* (float value) {
+		return Vector3(x * value, y * value, z * value);
 	}
 
 	glm::vec3 GetGlmVec3() {
@@ -113,7 +127,16 @@ enum BOARD_TYPE {
 	BEAD_ITEM,
 	POWERBEAD_ITEM,
 	WALL_0,
-	NONE
+	NONE,
+	INIT_PLAYER_POS
+};
+
+enum DIRECTION {
+	DIR_NONE,
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT
 };
 
 struct Shape {

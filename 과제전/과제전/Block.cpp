@@ -9,7 +9,7 @@ Block::Block(){
 Block::Block(Vector3 pos) {
 	this->type = ObjectType::WALL;
 	this->position = pos;	// position도 그냥 생성자에서 인자로 안받아오고 여기서 설정하면 안되나..? ingame에서 만들 때부터 넣어주는 게 아니라
-	this->scale = Vector3(1.0, 1.0, 1.0);
+	this->scale = Vector3(2.0, 2.0, 2.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->boundingOffset = 1.5f;//1.8;
 }

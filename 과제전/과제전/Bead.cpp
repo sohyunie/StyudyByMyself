@@ -11,7 +11,7 @@ Bead::Bead(Vector3 pos) {
 	this->position = Vector3(pos.x, pos.y, pos.z);
 	this->scale = Vector3(1.0, 1.0, 1.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
-	this->boundingOffset = 1.8;
+	this->boundingOffset = 1.5;
 }
 
 GLvoid Bead::DrawObject(GLuint s_program) {

@@ -49,6 +49,7 @@ private:
     bool EatBead = false;
     bool CollideBead = false;
     bool isPowerBead = false;
+    bool isInitComplete = false;
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -74,6 +75,7 @@ public:
     void computePos();
     void CameraSetting();
     void TimerFunction();
+    void CheckDirection(bool isCollision, int i, int j);
 
     bool GetIsDrawFill() { return this->isDrawFill; }
     glm::vec3 GetCameraPos() { return this->cameraPos; }

@@ -7,6 +7,7 @@
 #include "Bead.h"
 #include "PowerBead.h"
 #include "MapLoader.h"
+#include "InGameUI.h"
 //#include "Object.h"
 
 GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
@@ -244,6 +245,7 @@ GLvoid InGameManager::DrawScene() {
 	//this->ghost->DrawObject(s_program);
 	this->player->DrawObject(s_program);
 	this->map->DrawMap(s_program);
+	this->ingameUI->PrintInGameUI(s_program);
 	//this->bead->DrawObject(s_program, this->VAO[BEAD], this->gobj[BEAD]->indexCount);
 	//this->powerBead->DrawObject(s_program, this->VAO[POWERBEAD], this->gobj[POWERBEAD]->indexCount);
 }
@@ -516,6 +518,7 @@ GLvoid InGameManager::InitObject()
 	this->map = new MapLoader(0);
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
+	this->ingameUI = new InGameUI();
 	for (int i = 0; i < 20; ++i) {
 		this->ghost[i] = new Ghost(Vector3(uidGhostLocation(dre), 0, uidGhostLocation(dre)));
 	}

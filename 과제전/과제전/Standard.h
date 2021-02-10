@@ -30,7 +30,7 @@ const int MAX_VAO_TYPE = 5;
 #define LIGHT_POS		glm::vec3(1000.0, 1000.0, 100.0)
 #define LIGHT_COLOR		glm::vec3(1.0, 1.0, 1.0)
 
-#define FILE_NAME		"sphere.obj"
+#define FILE_NAME		"Model.obj"
 #define BEAD_FILE_NAME	"bead.obj"
 #define POWERBEAD_FILE_NAME	"powerbead.obj"
 #define CUBE_FILE_NAME	"gamecube-logo-cube.obj"

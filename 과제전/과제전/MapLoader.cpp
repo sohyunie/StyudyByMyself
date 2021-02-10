@@ -53,6 +53,7 @@ GLvoid MapLoader::Loadfile(int map)
                 switch (type) {
                 case BOARD_TYPE::BEAD_ITEM:
                     boardShape[i][j] = new Bead(position);
+                    //InGameManager::GetInstance().CalculatePointLight(*boardShape[i][j], 10);
                     break;
                 case BOARD_TYPE::POWERBEAD_ITEM:
                     boardShape[i][j] = new Bead(position);

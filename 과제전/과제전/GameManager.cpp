@@ -47,6 +47,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	{
 	case '1':
 		InGameManager::GetInstance().SetFPS(true);
+		break;
 	case '3':
 		InGameManager::GetInstance().SetFPS(false);
 		break;

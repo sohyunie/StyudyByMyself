@@ -20,6 +20,9 @@ public:
 	float hp = 100.0f;
 	int board_i = 3;
 	int board_j = 2;
+	DIRECTION playerDirection = DIRECTION::DIR_NONE;
+	Vector3 playerPriorDirVec3;
+	Vector3 playerDirVec3;
 };
 
 

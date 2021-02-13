@@ -70,7 +70,7 @@ struct Vector3 {
 		float sameY = abs(this->y - value.y);
 		float sameZ = abs(this->z - value.z);
 		float check = sameX + sameY + sameZ;
-		bool result = check < 0.6f; // 오차범위
+		bool result = check < 1.0f; // 오차범위
 		// cout << check << endl;
 		return result;
 	}
@@ -132,13 +132,23 @@ enum BOARD_TYPE {
 	INIT_PLAYER_POS
 };
 
-enum DIRECTION {
-	DIR_NONE,
+enum class DIRECTION {
 	UP,
+	RIGHT,
 	DOWN,
 	LEFT,
-	RIGHT
+	DIR_NONE
 };
+
+//DIRECTION operator++(DIRECTION& d)
+//{
+//	return d == DIRECTION::LEFT ? DIRECTION::UP : DIRECTION{ ++d };
+//}
+//
+//DIRECTION operator--(DIRECTION& d)
+//{
+//	return d == DIRECTION::UP ? DIRECTION::LEFT : DIRECTION{ --d };
+//}
 
 struct Shape {
 	BOARD_TYPE type;

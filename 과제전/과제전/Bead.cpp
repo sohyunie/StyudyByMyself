@@ -42,7 +42,7 @@ GLvoid Bead::DrawObject(GLuint s_program) {
 		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(proj));
 
 		int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
-		glUniform3f(lightPosLocation, 0.0, 0.0, 5.0);
+		glUniform3f(lightPosLocation, 0.0, 10.0, 0.0);
 
 		int lightColorLocation = glGetUniformLocation(s_program, "g_lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
 		glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);

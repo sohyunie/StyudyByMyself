@@ -10,6 +10,6 @@ public:
 
 	}
 
-	DIRECTION playerDirection = DIRECTION::DIR_NONE;
 	DIRECTION progressDirection = DIRECTION::DIR_NONE;
+	DIRECTION priorDirection = DIRECTION::DIR_NONE;
 };

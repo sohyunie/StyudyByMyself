@@ -52,6 +52,11 @@ private:
     bool CollideBead = false;
     bool isPowerBead = false;
     bool isInitComplete = false;
+    bool isChangeCameraDir = false;
+    bool isArrived = true; // 플레이어가 다른 칸에 도착한 그 순간! true, 그 외에는 항상 
+
+    float acc = 0.f; // 이동 amount
+    float accDir = 0.f; // 회전 amount
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -74,11 +79,10 @@ public:
     int GetBeadNumber() { return this->beadNumber; }
     bool GetPresence() { return this->isBead; }
     void CalculateTime();
-    void computeDir();
-    void computePos();
     void CameraSetting();
     void TimerFunction();
     void CheckDirection(bool isCollision, int i, int j);
+    Vector3 DirToVec3(DIRECTION dir);
 
     bool GetIsDrawFill() { return this->isDrawFill; }
     glm::vec3 GetCameraPos() { return this->cameraPos; }
@@ -98,6 +102,8 @@ public:
 
     GLint GetVAO(ObjectType type) { return this->VAO[type]; }
     ObjData* GetObjData(ObjectType type) { return this->objData[type]; }
+
+    Vector3 dir;
 protected:
 
 };

@@ -21,7 +21,7 @@ void Block::DrawObject(GLuint s_program) {
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 S = glm::mat4(1.0f); 
 	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
-	R = glm::rotate(R, glm::radians(45.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
+	R = glm::rotate(R, glm::radians(0.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
 	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 

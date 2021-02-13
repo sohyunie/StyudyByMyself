@@ -74,17 +74,48 @@ void processSpecialKeys(int key, int x, int y)
 	switch (key)
 	{
 	case GLUT_KEY_DOWN:
-		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
+		//InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
 		break;
 	case GLUT_KEY_UP:
-		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
-		break;
-	case GLUT_KEY_LEFT:
-		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::LEFT;
+		//InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
 		break;
 	case GLUT_KEY_RIGHT:
-		InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::RIGHT;
-
+		switch (InGameManager::GetInstance().GetPlayer()->playerDirection) {
+		case DIRECTION::DIR_NONE:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			break;
+		case DIRECTION::UP:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::LEFT;
+			break;
+		case DIRECTION::LEFT:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
+			break;
+		case DIRECTION::DOWN:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::RIGHT;
+			break;
+		case DIRECTION::RIGHT:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			break;
+		}
+		break;
+	case GLUT_KEY_LEFT:
+		switch (InGameManager::GetInstance().GetPlayer()->playerDirection) {
+		case DIRECTION::DIR_NONE:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			break;
+		case DIRECTION::UP:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::RIGHT;
+			break;
+		case DIRECTION::RIGHT:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
+			break;
+		case DIRECTION::DOWN:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::LEFT;
+			break;
+		case DIRECTION::LEFT:
+			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			break;
+		}
 		break;
 	}
 

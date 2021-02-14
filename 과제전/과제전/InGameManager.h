@@ -7,6 +7,7 @@ class Bead;
 class PowerBead;
 class Object;
 class InGameUI;
+class DynamicObject;
 
 class InGameManager
 {
@@ -20,7 +21,8 @@ private:
     //vector<Block> vBlock; // 여기서 변수 저렇게 써있자나..?! ㅇ그러면 메모리가 ㅇ우ㅛㅇ렁훙겡 웅웅ㅇ 요렇게 잡혀 그런데우웅
     Block* block;
     Block* block2;
-    Ghost* ghost[20];
+    //Ghost* ghost[20];
+    vector<Ghost*> vGhost;
     Object* object;
     ObjData* objData[MAX_VAO_TYPE];
     Player* player;
@@ -52,11 +54,6 @@ private:
     bool CollideBead = false;
     bool isPowerBead = false;
     bool isInitComplete = false;
-    bool isChangeCameraDir = false;
-    bool isArrived = true; // 플레이어가 다른 칸에 도착한 그 순간! true, 그 외에는 항상 
-
-    float acc = 0.f; // 이동 amount
-    float accDir = 0.f; // 회전 amount
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -81,8 +78,9 @@ public:
     void CalculateTime();
     void CameraSetting();
     void TimerFunction();
-    void CheckDirection(bool isCollision, int i, int j);
+    void CheckDirection(DynamicObject* dObject);
     Vector3 DirToVec3(DIRECTION dir);
+    void CreateGhost(int i, int j, Vector3 position);
 
     bool GetIsDrawFill() { return this->isDrawFill; }
     glm::vec3 GetCameraPos() { return this->cameraPos; }
@@ -103,7 +101,6 @@ public:
     GLint GetVAO(ObjectType type) { return this->VAO[type]; }
     ObjData* GetObjData(ObjectType type) { return this->objData[type]; }
 
-    Vector3 dir;
 protected:
 
 };

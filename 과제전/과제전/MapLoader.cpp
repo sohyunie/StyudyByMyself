@@ -68,6 +68,14 @@ GLvoid MapLoader::Loadfile(int map)
                     InGameManager::GetInstance().GetPlayer()->InitPlayerPos(i, j, position);
                     boardShape[i][j] = new StaticObject(position);
                     break;
+                case BOARD_TYPE::INIT_GHOST_POS:
+                    InGameManager::GetInstance().CreateGhost(i, j, position);
+                    InGameManager::GetInstance().CreateGhost(i, j, position);
+                    InGameManager::GetInstance().CreateGhost(i, j, position);
+                    boardShape[i][j] = new StaticObject(position);
+                    //InGameManager::GetInstance().GetPlayer()->InitPlayerPos(i, j, position);
+                    //boardShape[i][j] = new StaticObject(position);
+                    break;
                 }
             }
         }

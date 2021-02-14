@@ -74,46 +74,46 @@ void processSpecialKeys(int key, int x, int y)
 	switch (key)
 	{
 	case GLUT_KEY_DOWN:
-		//InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
+		//InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::DOWN;
 		break;
 	case GLUT_KEY_UP:
-		//InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+		//InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
 		break;
 	case GLUT_KEY_RIGHT:
-		switch (InGameManager::GetInstance().GetPlayer()->playerDirection) {
+		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
 		case DIRECTION::DIR_NONE:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
 			break;
 		case DIRECTION::UP:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::LEFT;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::LEFT;
 			break;
 		case DIRECTION::LEFT:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::DOWN;
 			break;
 		case DIRECTION::DOWN:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::RIGHT;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::RIGHT;
 			break;
 		case DIRECTION::RIGHT:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
 			break;
 		}
 		break;
 	case GLUT_KEY_LEFT:
-		switch (InGameManager::GetInstance().GetPlayer()->playerDirection) {
+		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
 		case DIRECTION::DIR_NONE:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
 			break;
 		case DIRECTION::UP:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::RIGHT;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::RIGHT;
 			break;
 		case DIRECTION::RIGHT:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::DOWN;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::DOWN;
 			break;
 		case DIRECTION::DOWN:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::LEFT;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::LEFT;
 			break;
 		case DIRECTION::LEFT:
-			InGameManager::GetInstance().GetPlayer()->playerDirection = DIRECTION::UP;
+			InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
 			break;
 		}
 		break;

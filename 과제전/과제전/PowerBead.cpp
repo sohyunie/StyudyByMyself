@@ -10,8 +10,9 @@ PowerBead::PowerBead() {
 PowerBead::PowerBead(Vector3 position) {
 	this->type = ObjectType::POWERBEAD;
 	this->position = position;
-	this->scale = Vector3(0.8, 0.8, 0.8);
+	this->scale = Vector3(1.0, 1.0, 1.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
+	this->color = Vector3(1.0, 0.0, 0.0);
 }
 
 GLvoid PowerBead::DrawObject(GLuint s_program) {
@@ -47,7 +48,7 @@ GLvoid PowerBead::DrawObject(GLuint s_program) {
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 
 	int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
-	glUniform3f(objColorLocation, 1.0, 1.0, 1.0);
+	glUniform3f(objColorLocation, this->color.x, this->color.y, this->color.z);
 
 	int ViewLocation = glGetUniformLocation(s_program, "g_cameraPos");
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);

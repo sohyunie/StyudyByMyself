@@ -6,6 +6,7 @@
 #include "Player.h"
 #include "Bead.h"
 #include "PowerBead.h"
+#include "DynamicObject.h"
 #include "MapLoader.h"
 #include "InGameUI.h"
 //#include "Object.h"
@@ -80,18 +81,18 @@ void InGameManager::CalculateTime() {
 void InGameManager::CameraSetting() {
 
 	if (this->isFPS == true) {
-		Vector3 dir = Vector3(this->player->GetPosition().x + this->dir.x, 0, this->player->GetPosition().z + this->dir.z);
+		Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
 
 		this->cameraDirection = dir.GetGlmVec3();
 		this->cameraPos = this->player->GetPosition().GetGlmVec3();
 		this->cameraPos.y += 1;
 	}
 	else {
-		Vector3 dir = Vector3(this->player->GetPosition().x + this->dir.x, 0, this->player->GetPosition().z + this->dir.z);
+		Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
 		this->cameraDirection = dir.GetGlmVec3();
 		this->cameraDirection.y += 5;
 		this->cameraPos = this->player->GetPosition().GetGlmVec3();
-		this->cameraPos.y += 50;
+		this->cameraPos.y += 100;
 	}
 
 }
@@ -226,16 +227,17 @@ GLvoid InGameManager::InitBuffer() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[POWERBEAD]->indexCount * sizeof(int), this->objData[POWERBEAD]->indexData, GL_STATIC_DRAW);
 }
 
-Ghost* InGameManager::GetGhost() {
-	for (int i = 0; i < 20; ++i) {
-		return ghost[i];
-	}
+void InGameManager::CreateGhost(int i, int j, Vector3 position) {
+	Ghost* ghost = new Ghost(i, j, position);
+	this->vGhost.push_back(ghost);
 }
 
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
-	for (int i = 0; i < 20; ++i) {
-		//this->ghost[i]->DrawObject(s_program);
+	for (Ghost* g : this->vGhost) {
+		if (g->GetIsActive()) {
+			g->DrawObject(s_program);
+		}
 	}
 	//this->ghost->DrawObject(s_program);
 	this->player->DrawObject(s_program);
@@ -273,202 +275,221 @@ Vector3 Lerp(Vector3 value1, Vector3 value2, float amount)
 	return newPos;
 }
 
-void InGameManager::CheckDirection(bool isCollision, int i, int j) {
+void InGameManager::CheckDirection(DynamicObject *dObject) {
 	float speed = 0.002f;
 
-	if (this->isChangeCameraDir) {
-		this->accDir += this->deltaTime * speed;
-		this->dir = Lerp(this->DirToVec3(this->player->priorDirection), this->DirToVec3(this->player->progressDirection), this->accDir).GetGlmVec3();
+	// 회전 관련 코드
+	if (dObject->isChangeCameraDir) {
+		dObject->accDir += this->deltaTime * speed;
+		dObject->dir = Lerp(this->DirToVec3(dObject->priorDirection), this->DirToVec3(dObject->progressDirection), dObject->accDir).GetGlmVec3();
 		// 회전 중!
-		if (this->accDir > 1) { // 회전이 끝났을 때
+		if (dObject->accDir > 1) { // 회전이 끝났을 때
 			//cout << "fin" << endl;
-			//cout << "Start : " << this->DirToVec3(this->player->priorDirection).x << ", " << this->DirToVec3(this->player->priorDirection).z << endl;
+
+			//cout << "Start : " << dObjectDirToVec3(this->player->priorDirection).x << ", " << this->DirToVec3(this->player->priorDirection).z << endl;
 			//cout << "End : " << this->DirToVec3(this->player->progressDirection).x << ", " << this->DirToVec3(this->player->progressDirection).z << endl << endl;
-			this->isChangeCameraDir = false;
-			this->accDir = 0;
+			dObject->isChangeCameraDir = false;
+			dObject->accDir = 0;
 		}
 		return;
 	}
 
-	if (this->isArrived && this->player->playerDirection != DIRECTION::DIR_NONE) {
-		this->player->priorDirection = this->player->progressDirection;
-		if (this->player->priorDirection == DIRECTION::DIR_NONE)
-			this->player->priorDirection = this->player->playerDirection;
-		this->player->progressDirection = this->player->playerDirection;
-		this->isArrived = false;
-		this->acc = 0;
+	// 플레이어가 이동 중이야, 근데 이동 중에 키를 눌렀어 다른 방향 키, 다른 방향 키 눌렀다고 해서 바로 반영되면 안되잖아. 왜냐면 도착해서 회전해야 i j 기반으로 움직이는거니까
+	// isArrived = true 인 순간이 i j 에 정확하게 도착한 순간인거지. 그래서 건들지 못하게 만드는거야 도착하기 전까지 새로운 키가 눌렸더라도.
+	if (dObject->isArrived && dObject->newDirection != DIRECTION::DIR_NONE) {
+		dObject->priorDirection = dObject->progressDirection; // priorDirection이 왜? 회전때문에 okay
+		if (dObject->priorDirection == DIRECTION::DIR_NONE) // 
+			dObject->priorDirection = dObject->newDirection;
+		dObject->progressDirection = dObject->newDirection;
+		dObject->isArrived = false;
+		dObject->acc = 0;
 
-		if (this->player->progressDirection != this->player->priorDirection)
-			this->isChangeCameraDir = true;
+		if (dObject->progressDirection != dObject->priorDirection)
+			dObject->isChangeCameraDir = true;
 		// 이 순간이 회전하는 순간입니다.
 		// 우리가 해줘야 할 것은?!
 		// 여기서 멈추고 회전을 다 하고 다음으로 이동합니다!
 		// 멈추고 Lerp를 돌려야함.
 	}
-	//cout <<"[" << this->player->board_i << "," << this->player->board_j <<  "]"<< this->player->GetPosition().x << ", " << this->player->GetPosition().z << endl;
+	//cout <<"[" << dObject->board_i << "," << dObject->board_j <<  "]"<< dObject->GetPosition().x << ", " << dObject->GetPosition().z << endl;
 
 	//cout << isArrived << endl;
 	StaticObject* target;
 	Vector3 startPos;
-	switch (this->player->progressDirection) {
+	switch (dObject->progressDirection) {
 	case DIRECTION::UP:
-		if (this->player->board_i - 1 < 0) // 아에 빈 보드판으로 가지 않도록
+		if (dObject->board_i - 1 < 0) // 아에 빈 보드판으로 가지 않도록
 		{
 			break;
 		}
-		this->acc += this->deltaTime * speed;
+		dObject->acc += this->deltaTime * speed;
 
-		startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
-		target = this->map->boardShape[this->player->board_i - 1][this->player->board_j];
-		//dir = target->GetPosition() - startPos;
-		dir = this->DirToVec3(DIRECTION::UP);
-		//cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+		startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
+		target = this->map->boardShape[dObject->board_i - 1][dObject->board_j];
+		dObject->dir = this->DirToVec3(DIRECTION::UP);
 
-		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
-			//cout << "Collision!!!!!!!!!!!!" << endl;
-			if (this->player->GetPosition() == target->GetPosition()) {
-				this->player->board_i = i;
-				this->player->board_j = j;
-				this->acc = 0;
-				this->isArrived = true;
-				startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
-				target = this->map->boardShape[this->player->board_i - 1][this->player->board_j];
+		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			if (dObject->GetPosition() == target->GetPosition()) {
+				cout << "Collision!!" << endl;
+				dObject->board_i = dObject->temp_i;
+				dObject->board_j = dObject->temp_j;
+				dObject->acc = 0;
+				dObject->isArrived = true;
+				startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
+				target = this->map->boardShape[dObject->board_i - 1][dObject->board_j];
 			}
 		}
 		else {
-			this->isArrived = false;
+			dObject->isArrived = false;
 		}
-		//cout << target->GetType() << endl;
-		if (!(target->GetType() == ObjectType::WALL)) {
-			this->player->SetPlayerPos(Lerp(startPos, target->GetPosition(), this->acc));
+
+		if (target->GetType() == ObjectType::WALL) {
+			if (dObject->GetType() == ObjectType::GHOST) {
+				Ghost* temp = (Ghost*)dObject;
+				temp->SetRandomDirection();
+			}
+			dObject->acc = 0;
+			dObject->isArrived = true;
 		}
 		else {
-			this->acc = 0;
-			this->isArrived = true;
+			dObject->SetPlayerPos(Lerp(startPos, target->GetPosition(), dObject->acc));
 		}
 		break;
 
 	case DIRECTION::DOWN:
-		if (this->player->board_i + 1 > 30) // 아에 빈 보드판으로 가지 않도록
+		if (dObject->board_i + 1 > 30) // 아에 빈 보드판으로 가지 않도록
 			break;
-		this->acc += this->deltaTime * speed;
+		dObject->acc += this->deltaTime * speed;
 
-		startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
-		target = this->map->boardShape[this->player->board_i + 1][this->player->board_j];
+		startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
+		target = this->map->boardShape[dObject->board_i + 1][dObject->board_j];
 		//dir = target->GetPosition() - startPos;
-		this->dir = this->DirToVec3(DIRECTION::DOWN);
-		//cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+		dObject->dir = this->DirToVec3(DIRECTION::DOWN);
+		//cout << "[" << dObject->board_i << "," << dObject->board_j << "]" << target->GetType() << endl;
 
-		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
-			if (this->player->GetPosition() == target->GetPosition()) {
-				this->player->board_i = i;
-				this->player->board_j = j;
-				this->acc = 0;
-				this->isArrived = true;
-				startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
-				target = this->map->boardShape[this->player->board_i + 1][this->player->board_j];
+		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			if (dObject->GetPosition() == target->GetPosition()) {
+				cout << "Collision!!" << endl;
+				dObject->board_i = dObject->temp_i;
+				dObject->board_j = dObject->temp_j;
+				dObject->acc = 0;
+				dObject->isArrived = true;
+				startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
+				target = this->map->boardShape[dObject->board_i + 1][dObject->board_j];
 			}
 		}
 		else {
-			this->isArrived = false;
+			dObject->isArrived = false;
 		}
 
 		if (!(target->GetType() == ObjectType::WALL)) {
-			this->player->SetPlayerPos(Lerp(startPos, target->GetPosition(), this->acc));
+			dObject->SetPlayerPos(Lerp(startPos, target->GetPosition(), dObject->acc));
 		}
 		else {
-			this->acc = 0;
-			this->isArrived = true;
+			if (dObject->GetType() == ObjectType::GHOST) {
+				Ghost* temp = (Ghost*)dObject;
+				temp->SetRandomDirection();
+			}
+			dObject->acc = 0;
+			dObject->isArrived = true;
 		}
 		break;
 
 	case DIRECTION::LEFT:
-		if (this->player->board_j - 1 < 0) // 아에 빈 보드판으로 가지 않도록
+		if (dObject->board_j - 1 < 0) // 아에 빈 보드판으로 가지 않도록
 			break;
-		this->acc += this->deltaTime * speed;
+		dObject->acc += this->deltaTime * speed;
 
-		startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
-		target = this->map->boardShape[this->player->board_i][this->player->board_j - 1];
+		startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
+		target = this->map->boardShape[dObject->board_i][dObject->board_j - 1];
 		//dir = target->GetPosition() - startPos;
-		dir = this->DirToVec3(DIRECTION::LEFT);
-		//cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+		dObject->dir = this->DirToVec3(DIRECTION::LEFT);
+		//cout << "[" << dObject->board_i << "," << dObject->board_j << "]" << target->GetType() << endl;
 
-		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
-			if (this->player->GetPosition() == target->GetPosition()) {
-				this->player->board_i = i;
-				this->player->board_j = j;
-				this->acc = 0;
-				this->isArrived = true;
-				target = this->map->boardShape[this->player->board_i][this->player->board_j - 1];
-				startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
+		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			if (dObject->GetPosition() == target->GetPosition()) {
+				cout << "Collision!!" << endl;
+				dObject->board_i = dObject->temp_i;
+				dObject->board_j = dObject->temp_j;
+				dObject->acc = 0;
+				dObject->isArrived = true;
+				target = this->map->boardShape[dObject->board_i][dObject->board_j - 1];
+				startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
 			}
 		}
 		else {
-			this->isArrived = false;
+			dObject->isArrived = false;
 		}
 
 		if (!(target->GetType() == ObjectType::WALL)) {
-			this->player->SetPlayerPos(Lerp(startPos, target->GetPosition(), this->acc));
+			dObject->SetPlayerPos(Lerp(startPos, target->GetPosition(), dObject->acc));
 		}
 		else {
-			this->acc = 0;
-			this->isArrived = true;
+			if (dObject->GetType() == ObjectType::GHOST) {
+				Ghost* temp = (Ghost*)dObject;
+				temp->SetRandomDirection();
+			}
+			dObject->acc = 0;
+			dObject->isArrived = true;
 		}
 		break;
 
 	case DIRECTION::RIGHT:
 		if (player->board_j + 1 > 31) // 아에 빈 보드판으로 가지 않도록
 			break;
-		this->acc += this->deltaTime * speed;
+		dObject->acc += this->deltaTime * speed;
 
-		startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
-		target = this->map->boardShape[this->player->board_i][this->player->board_j + 1];
-		//cout << "[" << this->player->board_i << "," << this->player->board_j << "]" << target->GetType() << endl;
+		startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
+		target = this->map->boardShape[dObject->board_i][dObject->board_j + 1];
+		//cout << "[" << dObject->board_i << "," << dObject->board_j << "]" << target->GetType() << endl;
 		//dir = target->GetPosition() - startPos;
-		dir = this->DirToVec3(DIRECTION::RIGHT);
+		dObject->dir = this->DirToVec3(DIRECTION::RIGHT);
 
-		if (isCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
-			if (this->player->GetPosition() == target->GetPosition()) {
-				this->player->board_i = i;
-				this->player->board_j = j;
-				this->acc = 0;
-				this->isArrived = true;
-				target = this->map->boardShape[this->player->board_i][this->player->board_j + 1];
-				startPos = this->map->boardShape[this->player->board_i][this->player->board_j]->GetPosition();
+		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
+			if (dObject->GetPosition() == target->GetPosition()) {
+				cout << "Collision!!" << endl;
+				dObject->board_i = dObject->temp_i;
+				dObject->board_j = dObject->temp_j;
+				dObject->acc = 0;
+				dObject->isArrived = true;
+				target = this->map->boardShape[dObject->board_i][dObject->board_j + 1];
+				startPos = this->map->boardShape[dObject->board_i][dObject->board_j]->GetPosition();
 			}
 		}
 
 		//cout << target->GetType() << endl;
 		if (!(target->GetType() == ObjectType::WALL)) {
-			this->player->SetPlayerPos(Lerp(startPos, target->GetPosition(), this->acc));
+			dObject->SetPlayerPos(Lerp(startPos, target->GetPosition(), dObject->acc));
 		}
 		else {
-			this->acc = 0;
-			this->isArrived = true;
+			if (dObject->GetType() == ObjectType::GHOST) {
+				Ghost* temp = (Ghost*)dObject;
+				temp->SetRandomDirection();
+			}
+			dObject->acc = 0;
+			dObject->isArrived = true;
 		}
 		break;
 	}
 }
 
 void InGameManager::TimerFunction() {
-	ghostSpawnRunningTime += this->GetDeltaTime();
-	if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
-		ghostSpawnRunningTime = 0;
-		for (int i = 0; i < 20; i++) {
-			if (!this->ghost[i]->GetIsActive()) {
-				this->ghost[i]->SetIsActive(true);
-				break;
-			}
-		}
-	}
+	//ghostSpawnRunningTime += this->GetDeltaTime();
+	//if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
+	//	ghostSpawnRunningTime = 0;
+	//	for (Ghost* g : this->vGhost) {
+	//		if (!g->GetIsActive()) {
+	//			g->SetIsActive(true);
+	//			break;
+	//		}
+	//	}
+	//}
 
-	bool isMapCollision = false;
-	int temp_i = 0;
-	int temp_j = 0;
 	for (int i = 0; i < MAP_SIZE; ++i) {
 		for (int j = 0; j < MAP_SIZE; ++j) {
 			Object obj = *this->map->boardShape[i][j];
 
+			// Player
 			bool isCollision = this->player->CollisionCheck(obj);
 			if (isCollision) {
 				//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
@@ -484,38 +505,69 @@ void InGameManager::TimerFunction() {
 					// cout << "HP: " << player->hp << endl;
 					break;
 				case ObjectType::BEAD:
-					isMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+					// isMapCollision : <딱 부딪친 순간만> 체크하는 bool이에요!
+					// player boar i j  // 새롭게 부딪친 i j
+					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j)); // 출발점이 
 					cout << "BEAD" << endl;
-					temp_i = i;
-					temp_j = j;
+					this->player->temp_i = i;
+					this->player->temp_j = j;
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
 					this->beadNumber += 1;
 					// cout << "beadNumber: " << this->beadNumber << endl;
 					break;
 				case ObjectType::POWERBEAD:
-					isMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
-					temp_i = i;
-					temp_j = j;
+					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+					this->player->temp_i = i;
+					this->player->temp_j = j;
 					// n초 동안 무적 상태
 					obj = StaticObject();
 					break;
 				case ObjectType::ROAD:
-					isMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
+					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
 					//cout << "ROAD" << endl;
-					temp_i = i;
-					temp_j = j;
+					this->player->temp_i = i;
+					this->player->temp_j = j;
 					break;
+				}
+			}
+
+			// Ghost
+			for (Ghost* g : this->vGhost) {
+				bool isCollision = g->CollisionCheck(obj);
+				if (isCollision) {
+					//cout << "isCollision!! : " << i << "," << j << " : " << obj.GetType() << endl;
+					switch (obj.GetType()) {
+					case ObjectType::WALL:
+						break;
+					case ObjectType::BEAD:
+						g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+						g->temp_i = i;
+						g->temp_j = j;
+						break;
+					case ObjectType::POWERBEAD:
+						g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+						g->temp_i = i;
+						g->temp_j = j;
+						break;
+					case ObjectType::ROAD:
+						g->isNewMapCollision = (!(g->board_i == i && g->board_j == j));
+						//cout << "ROAD" << endl;
+						g->temp_i = i;
+						g->temp_j = j;
+						break;
+					}
 				}
 			}
 		}
 	}
 
-
-
 	this->GetTime();
 	this->CalculateTime();
 	this->CameraSetting();
-	this->CheckDirection(isMapCollision, temp_i, temp_j);
+	for (Ghost* g : this->vGhost) {
+		this->CheckDirection(g);
+	}
+	this->CheckDirection(this->player);
 }
 
 GLvoid InGameManager::InitShader() {
@@ -552,9 +604,6 @@ GLvoid InGameManager::InitObject()
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
 	this->ingameUI = new InGameUI();
-	for (int i = 0; i < 20; ++i) {
-		this->ghost[i] = new Ghost(Vector3(uidGhostLocation(dre), 0, uidGhostLocation(dre)));
-	}
 	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
 	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
 	this->CameraSetting();

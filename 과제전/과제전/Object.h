@@ -17,6 +17,7 @@ public:
 	void SetPosition(Vector3 position) { this->position = position; }
 protected:
 	Vector3 position;
+	Vector3 color;
 	Vector3 scale;
 	Vector3 rotate;
 	ObjectType type;

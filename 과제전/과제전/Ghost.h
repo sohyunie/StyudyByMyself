@@ -4,14 +4,14 @@
 class Ghost : public DynamicObject
 {
 private:
-	bool isActive = false;
+	bool isActive = true;
 public:
 	Ghost();
-	Ghost(Vector3 pos);
+	Ghost(int i, int j, Vector3 pos);
+	void SetRandomDirection();
 	virtual void DrawObject(GLuint s_program) override;
 	void MakeGhost(Ghost ghost);
 	bool GetIsActive() { return this->isActive; }
-	glm::vec3 color;
 	void SetIsActive(bool isOn) { this->isActive = isOn; }
 
 

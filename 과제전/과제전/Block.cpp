@@ -2,6 +2,9 @@
 #include "Block.h"
 #include "InGameManager.h"
 
+//default_random_engine dreColor_block((size_t)time(NULL));
+//normal_distribution <float>uidColor_block{ 0.0,1.0 };
+
 Block::Block(){
 	this->type = ObjectType::WALL;
 }
@@ -9,12 +12,15 @@ Block::Block(){
 Block::Block(Vector3 pos) {
 	this->type = ObjectType::WALL;
 	this->position = pos;	// position도 그냥 생성자에서 인자로 안받아오고 여기서 설정하면 안되나..? ingame에서 만들 때부터 넣어주는 게 아니라
-	this->scale = Vector3(2.0, 2.0, 2.0);
+	this->position.y += 2;
+	this->scale = Vector3(2.0, 4.0, 2.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->boundingOffset = 1.5f;//1.8;
+	this->color = glm::vec3(0.3, 0.3, 0.3);
 }
 
 void Block::DrawObject(GLuint s_program) {
+	//this->color = glm::vec3(uidColor_block(dreColor_block), uidColor_block(dreColor_block), uidColor_block(dreColor_block));
 	//cout << "DrawObject : Block" << endl; 
 	glm::mat4 STR = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 R = glm::mat4(1.0f); //--- rotation matrix
@@ -48,7 +54,7 @@ void Block::DrawObject(GLuint s_program) {
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 
 	int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
-	glUniform3f(objColorLocation, 1.0, 1.0, 1.0);
+	glUniform3f(objColorLocation, this->color.x, this->color.y, this->color.z);
 
 	int ViewLocation = glGetUniformLocation(s_program, "g_cameraPos");
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);

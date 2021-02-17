@@ -12,7 +12,8 @@ Ghost::Ghost() {
 	this->type = ObjectType::GHOST;
 }
 
-Ghost::Ghost(int i, int j, Vector3 pos) {
+Ghost::Ghost(int i, int j, Vector3 pos, int id) {
+	this->id;
 	this->type = ObjectType::GHOST;
 	this->position = pos;
 	this->board_i = i;

@@ -13,6 +13,7 @@ PowerBead::PowerBead(Vector3 position) {
 	this->scale = Vector3(1.0, 1.0, 1.0);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->color = Vector3(1.0, 0.0, 0.0);
+	this->boundingOffset = 1.5;
 }
 
 GLvoid PowerBead::DrawObject(GLuint s_program) {

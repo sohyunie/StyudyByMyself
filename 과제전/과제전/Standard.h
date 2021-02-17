@@ -10,6 +10,7 @@
 #include <time.h>
 #include <windows.h>
 #include <vector>
+#include <algorithm>
 #include <gl/glew.h> 
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
@@ -32,13 +33,16 @@ const int MAX_VAO_TYPE = 5;
 
 #define FILE_NAME		"Model.obj"
 #define BEAD_FILE_NAME	"bead.obj"
-#define POWERBEAD_FILE_NAME	"powerbead.obj"
+#define POWERBEAD_FILE_NAME	"bead.obj"
 #define CUBE_FILE_NAME	"gamecube-logo-cube.obj"
 
 #define MAP_SIZE 30
 #define MAX_TIME 120
 #define GHOST_SPAWN_TIME 3 * 60 * 60
+#define POWER_BEAD_TIME 2.5 * 60 * 60
 
+#define NORMAL_SPEED 0.002
+#define POWER_SPEED 0.004
 struct ObjData {
 	float* vPosData;	// 값이 하나만 있어도 되는 건 그냥 변수로/ 아니고 여러개가 나열되고 필요한 것들은 *로 받는다.
 	float* vNormalData;

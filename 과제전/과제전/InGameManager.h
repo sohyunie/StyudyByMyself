@@ -9,6 +9,9 @@ class Object;
 class InGameUI;
 class DynamicObject;
 
+#include <algorithm>
+#include <list>
+
 class InGameManager
 {
 private:
@@ -22,7 +25,7 @@ private:
     Block* block;
     Block* block2;
     //Ghost* ghost[20];
-    vector<Ghost*> vGhost;
+    list<Ghost*> vGhost;
     Object* object;
     ObjData* objData[MAX_VAO_TYPE];
     Player* player;
@@ -34,7 +37,8 @@ private:
     glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.25f); 
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
     glm::vec3 offset = glm::vec3(0.0f, 15.5f, 0.0f); // 카메라 오차범위계산 눈은 위에 달림
-    
+
+    float speed = NORMAL_SPEED;
     float degreeCameraRotate = 45.0f; // 요고야 요고 근데 얘 안쓰고 있을걸?  
     float degreeLightPos = 0.0f;
     float deltaTime = 0.0f;
@@ -42,6 +46,7 @@ private:
     float currentFrame = 0.0f;
     float additonalTime = 0.0f;
     float inGameTime = 0.0f;
+    float powerBeadTime = 0.0f;
     float angle, lx, lz = 0.0f;
     float ghostSpawnRunningTime = 0.0f;
     glm::vec3 ghostColor = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -51,9 +56,12 @@ private:
     bool isGhost = false;
     bool isBead = true;
     bool EatBead = false;
+    bool EatPowerBead = false;
     bool CollideBead = false;
     bool isPowerBead = false;
     bool isInitComplete = false;
+    int ghostID;
+  
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -73,7 +81,7 @@ public:
     float GetIngameTime() { return this->inGameTime; }
     float currentTime() { return MAX_TIME - round(this->inGameTime / 100) / 10 + this->additonalTime; }
     float GetTime();
-    int GetBeadNumber() { return this->beadNumber; }
+    //int GetBeadNumber() { return this->beadNumber; }
     bool GetPresence() { return this->isBead; }
     void CalculateTime();
     void CameraSetting();
@@ -81,6 +89,10 @@ public:
     void CheckDirection(DynamicObject* dObject);
     Vector3 DirToVec3(DIRECTION dir);
     void CreateGhost(int i, int j, Vector3 position);
+    void DeleteGhost(Ghost* g);
+    Ghost* FindGhostByID(int id);
+    float CountBeadAmount();
+    float CalculateBeadAmount();
 
     bool GetIsDrawFill() { return this->isDrawFill; }
     glm::vec3 GetCameraPos() { return this->cameraPos; }
@@ -97,6 +109,7 @@ public:
     InGameUI* GetInGameUI() { return this->ingameUI; }
     GLvoid DrawMap(){}
     bool GetFPS() { return this->isFPS; }
+    void ChangeSpeed(float speed);
 
     GLint GetVAO(ObjectType type) { return this->VAO[type]; }
     ObjData* GetObjData(ObjectType type) { return this->objData[type]; }

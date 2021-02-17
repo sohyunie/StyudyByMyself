@@ -228,17 +228,45 @@ GLvoid InGameManager::InitBuffer() {
 }
 
 void InGameManager::CreateGhost(int i, int j, Vector3 position) {
-	Ghost* ghost = new Ghost(i, j, position);
+	Ghost* ghost = new Ghost(i, j, position, this->ghostID++);
 	this->vGhost.push_back(ghost);
+}
+
+void InGameManager::DeleteGhost(Ghost* g) {
+	vGhost.remove(g);
+	delete g;
+}
+
+Ghost* InGameManager::FindGhostByID(int id) {
+	//for (Ghost* g : vGhost) {
+	//	if (g->GetID() == id)
+	//		return g;
+	//}
+
+	//std::list<Ghost*>::iterator it;
+	//it = vGhost.begin();
+	//it = find(this->vGhost.begin(), this->vGhost.end(), 30);
+
+	return NULL;
 }
 
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
-	for (Ghost* g : this->vGhost) {
-		if (g->GetIsActive()) {
-			g->DrawObject(s_program);
+
+	std::list<Ghost*>::iterator it;
+	it = vGhost.begin();
+	while (it != vGhost.end()) 
+	{
+		if ((*it)->GetIsActive()) {
+			(*it)->DrawObject(s_program);
 		}
+		it++;
 	}
+	//for(Ghost* g : this->vGhost) {
+	//	if (g->GetIsActive()) {
+	//		g->DrawObject(s_program);
+	//	}
+	//}
 	//this->ghost->DrawObject(s_program);
 	this->player->DrawObject(s_program);
 	this->map->DrawMap(s_program);
@@ -260,11 +288,27 @@ Vector3 InGameManager::DirToVec3(DIRECTION dir) {
 	}
 }
 
+float InGameManager::CountBeadAmount() {
+	return this->beadNumber++;
+}
+
+float InGameManager::CalculateBeadAmount() {
+	if (this->EatBead) {
+		this->beadNumber--;
+		this->EatBead = false;
+	}
+	return this->beadNumber;
+}
+
 float InGameManager::GetTime() {
 	currentFrame = glutGet(GLUT_ELAPSED_TIME);
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 	return lastFrame;
+}
+
+void InGameManager::ChangeSpeed(float speed) {
+	this->speed = speed;
 }
 
 
@@ -276,7 +320,7 @@ Vector3 Lerp(Vector3 value1, Vector3 value2, float amount)
 }
 
 void InGameManager::CheckDirection(DynamicObject *dObject) {
-	float speed = 0.002f;
+	float speed = (dObject->GetType() == ObjectType::GHOST) ? NORMAL_SPEED : this->speed;
 
 	// 회전 관련 코드
 	if (dObject->isChangeCameraDir) {
@@ -484,6 +528,14 @@ void InGameManager::TimerFunction() {
 	//		}
 	//	}
 	//}
+	if (this->EatPowerBead == true) {
+		this->powerBeadTime += this->deltaTime;
+		if (this->powerBeadTime > POWER_BEAD_TIME) {
+			cout << this->powerBeadTime << endl;
+			this->EatPowerBead = false;
+			this->ChangeSpeed(NORMAL_SPEED);
+		}
+	}
 
 	for (int i = 0; i < MAP_SIZE; ++i) {
 		for (int j = 0; j < MAP_SIZE; ++j) {
@@ -496,31 +548,25 @@ void InGameManager::TimerFunction() {
 				switch (obj.GetType()) {
 				case ObjectType::WALL:
 					break;
-				case ObjectType::GHOST:
-					this->isGhost = true;
-					if (this->isGhost == true) {
-						player->hp = -5.0f;
-						isGhost = false;
-					}
-					// cout << "HP: " << player->hp << endl;
-					break;
 				case ObjectType::BEAD:
 					// isMapCollision : <딱 부딪친 순간만> 체크하는 bool이에요!
 					// player boar i j  // 새롭게 부딪친 i j
 					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j)); // 출발점이 
-					cout << "BEAD" << endl;
+					//cout << "BEAD" << endl;
 					this->player->temp_i = i;
 					this->player->temp_j = j;
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
-					this->beadNumber += 1;
+					this->EatBead = true;
 					// cout << "beadNumber: " << this->beadNumber << endl;
 					break;
 				case ObjectType::POWERBEAD:
 					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
 					this->player->temp_i = i;
 					this->player->temp_j = j;
+					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
+					this->EatPowerBead = true;
+					this->ChangeSpeed(POWER_SPEED);
 					// n초 동안 무적 상태
-					obj = StaticObject();
 					break;
 				case ObjectType::ROAD:
 					this->player->isNewMapCollision = (!(this->player->board_i == i && this->player->board_j == j));
@@ -561,6 +607,47 @@ void InGameManager::TimerFunction() {
 		}
 	}
 
+	// Player to Ghost
+	std::list<Ghost*>::iterator it;
+	it = vGhost.begin();
+	Ghost* ghost = nullptr;
+	while (it != vGhost.end())
+	{
+		bool isCollision = (*it)->CollisionCheck(*this->player);	// (*it)로 쓰면, n번째 값에 접근하는 형태 | 엄청중요! STL은 이게 다다!!
+		if (isCollision) {
+			if (this->EatPowerBead) {
+				ghost = (*it);
+			}
+			else {
+				this->isGhost = true;
+				if (this->isGhost == true) {
+					player->hp = -5.0f;
+					isGhost = false;
+				}
+			}
+		}
+		it++;
+	}
+
+	if(ghost != nullptr)
+		this->DeleteGhost(ghost);
+
+	// Player to Ghost
+	//for (Ghost* g : this->vGhost) {
+	//	bool isCollision = g->CollisionCheck(*this->player);
+	//	if (isCollision) {
+	//		if (true) {
+	//			this->DeleteGhost(g);
+	//		}
+	//		else {
+	//			this->isGhost = true;
+	//			if (this->isGhost == true) {
+	//				player->hp = -5.0f;
+	//				isGhost = false;
+	//			}
+	//		}
+	//	}
+	//}
 	this->GetTime();
 	this->CalculateTime();
 	this->CameraSetting();
@@ -609,7 +696,7 @@ GLvoid InGameManager::InitObject()
 	this->CameraSetting();
 	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
-	ReadObj(POWERBEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
+	ReadObj(BEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[WALL]->vPosData, this->objData[WALL]->vNormalData, this->objData[WALL]->vTextureCoordinateData, this->objData[WALL]->indexData, this->objData[WALL]->vertexCount, this->objData[WALL]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[PLAYER]->vPosData, this->objData[PLAYER]->vNormalData, this->objData[PLAYER]->vTextureCoordinateData, this->objData[PLAYER]->indexData, this->objData[PLAYER]->vertexCount, this->objData[PLAYER]->indexCount);
 

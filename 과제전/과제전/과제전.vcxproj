@@ -21,6 +21,7 @@
   <ItemGroup>
     <ClInclude Include="Bead.h" />
     <ClInclude Include="Block.h" />
+    <ClInclude Include="Bottom.h" />
     <ClInclude Include="DynamicObject.h" />
     <ClInclude Include="EndingScene.h" />
     <ClInclude Include="Ghost.h" />
@@ -39,6 +40,7 @@
   <ItemGroup>
     <ClCompile Include="Bead.cpp" />
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Bottom.cpp" />
     <ClCompile Include="DynamicObject.cpp" />
     <ClCompile Include="EndingScene.cpp" />
     <ClCompile Include="GameManager.cpp" />

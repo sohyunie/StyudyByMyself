@@ -12,8 +12,8 @@ Block::Block(){
 Block::Block(Vector3 pos) {
 	this->type = ObjectType::WALL;
 	this->position = pos;	// position도 그냥 생성자에서 인자로 안받아오고 여기서 설정하면 안되나..? ingame에서 만들 때부터 넣어주는 게 아니라
-	this->position.y += 2;
-	this->scale = Vector3(2.0, 2.0, 2.0);
+	this->position.y -= 0;
+	this->scale = Vector3(2.75, 2.75, 2.75);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->boundingOffset = 1.5f;//1.8;
 	this->color = glm::vec3(0.3, 0.3, 0.3);
@@ -31,6 +31,7 @@ void Block::DrawObject(GLuint s_program) {
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
 	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 
+	Vector3 lightColor = InGameManager::GetInstance().GetLightColor();
 	glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
 	glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();
 	glm::vec3 cameraUp = InGameManager::GetInstance().GetCameraUp();
@@ -48,10 +49,10 @@ void Block::DrawObject(GLuint s_program) {
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
 	int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
-	glUniform3f(lightPosLocation, 0.0, 0.0, 5.0);
+	glUniform3f(lightPosLocation, lightPos.x, lightPos.y, lightPos.z);
 
 	int lightColorLocation = glGetUniformLocation(s_program, "g_lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
-	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
+	glUniform3f(lightColorLocation, lightColor.x, lightColor.y, lightColor.z);
 
 	int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
 	glUniform3f(objColorLocation, this->color.x, this->color.y, this->color.z);

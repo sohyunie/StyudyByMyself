@@ -6,6 +6,7 @@ class Ghost : public DynamicObject
 private:
 	bool isActive = true;
 	int id;
+	float rotateAngle = 0.0f;
 public:
 	Ghost();
 	Ghost(int i, int j, Vector3 pos, int id);

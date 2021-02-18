@@ -9,6 +9,7 @@
 #include "DynamicObject.h"
 #include "MapLoader.h"
 #include "InGameUI.h"
+#include "Bottom.h"
 //#include "Object.h"
 
 GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
@@ -81,11 +82,12 @@ void InGameManager::CalculateTime() {
 void InGameManager::CameraSetting() {
 
 	if (this->isFPS == true) {
-		Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
+		Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
 
 		this->cameraDirection = dir.GetGlmVec3();
 		this->cameraPos = this->player->GetPosition().GetGlmVec3();
 		this->cameraPos.y += 1;
+		//this->cameraPos.y += 1;
 	}
 	else {
 		Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
@@ -225,6 +227,31 @@ GLvoid InGameManager::InitBuffer() {
 	glGenBuffers(1, &this->EBO[POWERBEAD]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[POWERBEAD]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[POWERBEAD]->indexCount * sizeof(int), this->objData[POWERBEAD]->indexData, GL_STATIC_DRAW);
+
+
+	// BOTTOM
+	glGenVertexArrays(1, &this->VAO[BOTTOM]);
+	glBindVertexArray(this->VAO[BOTTOM]);
+	glGenBuffers(3, this->VBO[BOTTOM]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BOTTOM][0]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BOTTOM]->vertexCount * sizeof(float) * 3, this->objData[BOTTOM]->vPosData, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
+	glEnableVertexAttribArray(0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BOTTOM][1]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BOTTOM]->vertexCount * sizeof(float) * 3, this->objData[BOTTOM]->vNormalData, GL_STATIC_DRAW);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 3, NULL);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->VBO[BOTTOM][2]);
+	glBufferData(GL_ARRAY_BUFFER, this->objData[BOTTOM]->vertexCount * sizeof(float) * 2, this->objData[BOTTOM]->vTextureCoordinateData, GL_STATIC_DRAW);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, NULL);
+	glEnableVertexAttribArray(2);
+
+	glGenBuffers(1, &this->EBO[BOTTOM]);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[BOTTOM]);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[BOTTOM]->indexCount * sizeof(int), this->objData[BOTTOM]->indexData, GL_STATIC_DRAW);
 }
 
 void InGameManager::CreateGhost(int i, int j, Vector3 position) {
@@ -271,6 +298,7 @@ GLvoid InGameManager::DrawScene() {
 	this->player->DrawObject(s_program);
 	this->map->DrawMap(s_program);
 	this->ingameUI->PrintInGameUI(s_program);
+	this->bottom->DrawObject(s_program);
 	//this->bead->DrawObject(s_program, this->VAO[BEAD], this->gobj[BEAD]->indexCount);
 	//this->powerBead->DrawObject(s_program, this->VAO[POWERBEAD], this->gobj[POWERBEAD]->indexCount);
 }
@@ -517,7 +545,11 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 	}
 }
 
+default_random_engine dreColor_light((size_t)time(NULL));
+normal_distribution <float>uidColor_light{ 0.0,1.0 };
+
 void InGameManager::TimerFunction() {
+
 	//ghostSpawnRunningTime += this->GetDeltaTime();
 	//if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
 	//	ghostSpawnRunningTime = 0;
@@ -530,8 +562,12 @@ void InGameManager::TimerFunction() {
 	//}
 	if (this->EatPowerBead == true) {
 		this->powerBeadTime += this->deltaTime;
+		lightColor.x = uidColor_light(dreColor_light);
+		lightColor.y = uidColor_light(dreColor_light);
+		lightColor.z = uidColor_light(dreColor_light);
 		if (this->powerBeadTime > POWER_BEAD_TIME) {
 			cout << this->powerBeadTime << endl;
+			lightColor = Vector3(1.0, 1.0, 1.0);
 			this->EatPowerBead = false;
 			this->ChangeSpeed(NORMAL_SPEED);
 		}
@@ -681,16 +717,18 @@ GLvoid InGameManager::InitObject()
 	//this->block2 = new Block(Vector3(10.0, 0, 0));
 
 	this->objData[PLAYER] = new ObjData();
-	this->objData[GHOST] = new ObjData();
-	this->objData[BEAD] = new ObjData();
-	this->objData[POWERBEAD] = new ObjData();
 	this->objData[WALL] = new ObjData();
+	this->objData[BEAD] = new ObjData();
+	this->objData[GHOST] = new ObjData();
+	this->objData[POWERBEAD] = new ObjData();
+	this->objData[BOTTOM] = new ObjData();
 
 	this->player = new Player();
 	this->map = new MapLoader(0);
 	this->bead = new Bead();
 	this->powerBead = new PowerBead();
 	this->ingameUI = new InGameUI();
+	this->bottom = new Bottom(Vector3(75,0,75));
 	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
 	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
 	this->CameraSetting();
@@ -699,7 +737,7 @@ GLvoid InGameManager::InitObject()
 	ReadObj(BEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[WALL]->vPosData, this->objData[WALL]->vNormalData, this->objData[WALL]->vTextureCoordinateData, this->objData[WALL]->indexData, this->objData[WALL]->vertexCount, this->objData[WALL]->indexCount);
 	ReadObj(CUBE_FILE_NAME, this->objData[PLAYER]->vPosData, this->objData[PLAYER]->vNormalData, this->objData[PLAYER]->vTextureCoordinateData, this->objData[PLAYER]->indexData, this->objData[PLAYER]->vertexCount, this->objData[PLAYER]->indexCount);
-
+	ReadObj(CUBE_FILE_NAME, this->objData[BOTTOM]->vPosData, this->objData[BOTTOM]->vNormalData, this->objData[BOTTOM]->vTextureCoordinateData, this->objData[BOTTOM]->indexData, this->objData[BOTTOM]->vertexCount, this->objData[BOTTOM]->indexCount);
 	cout << "test" << endl;
 	// vBlock.push_back(Block());
 	this->isInitComplete = true;

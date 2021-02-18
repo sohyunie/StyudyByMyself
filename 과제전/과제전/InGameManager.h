@@ -8,6 +8,7 @@ class PowerBead;
 class Object;
 class InGameUI;
 class DynamicObject;
+class Bottom;
 
 #include <algorithm>
 #include <list>
@@ -33,6 +34,7 @@ private:
     Bead* bead;
     PowerBead* powerBead;
     InGameUI* ingameUI;
+    Bottom* bottom;
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
     glm::vec3 cameraDirection = glm::vec3(0.0f, 0.0f, 0.25f); 
     glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
@@ -61,7 +63,7 @@ private:
     bool isPowerBead = false;
     bool isInitComplete = false;
     int ghostID;
-  
+    Vector3 lightColor = Vector3(1,1,1);
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -102,6 +104,8 @@ public:
     void SetDegreeCameraRotate(float rotate) { this->degreeCameraRotate = rotate; }
     void SetCameraDirection(glm::vec3 dir) {   this->cameraDirection = dir; }
     void SetFPS(bool isOn) { this->isFPS = isOn; }
+    Vector3 GetLightColor() { return this->lightColor; }
+    void SetLightColor(Vector3 color) { this->lightColor = color; }
     Ghost* GetGhost();
 
     Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함

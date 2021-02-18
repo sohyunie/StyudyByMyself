@@ -12,7 +12,8 @@ Bead::Bead() {
 Bead::Bead(Vector3 pos) {
 	this->type = ObjectType::BEAD;
 	this->position = Vector3(pos.x, pos.y, pos.z);
-	this->scale = Vector3(0.7, 0.7, 0.7);
+	this->position.y -= 1.0;
+	this->scale = Vector3(0.05, 0.05, 0.05);
 	this->rotate = Vector3(0.0, 1.0, 0.0);
 	this->color = Vector3(1.0, 1.0, 1.0);
 	this->boundingOffset = 1.5;
@@ -33,6 +34,7 @@ GLvoid Bead::DrawObject(GLuint s_program) {
 		glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
 		glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();
 		glm::vec3 cameraUp = InGameManager::GetInstance().GetCameraUp();
+		Vector3 lightColor = InGameManager::GetInstance().GetLightColor();
 
 		glm::mat4 view = glm::lookAt(glm::vec3(cameraPos), cameraDirection, cameraUp);
 		glm::mat4 proj = glm::perspective(glm::radians(60.0f), WINDOW_WITDH / (float)WINDOW_HEIGHT, 0.001f, 1000.f);
@@ -47,10 +49,10 @@ GLvoid Bead::DrawObject(GLuint s_program) {
 		glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(proj));
 
 		int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
-		glUniform3f(lightPosLocation, 0.0, 10.0, 0.0);
+		glUniform3f(lightPosLocation, lightPos.x, lightPos.y, lightPos.z);
 
 		int lightColorLocation = glGetUniformLocation(s_program, "g_lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
-		glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
+		glUniform3f(lightColorLocation, lightColor.x, lightColor.y, lightColor.z);
 
 		int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
 		glUniform3f(objColorLocation, this->color.x, this->color.y, this->color.z);

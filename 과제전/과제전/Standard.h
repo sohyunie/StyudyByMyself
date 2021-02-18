@@ -20,7 +20,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 using namespace std;
-const int MAX_VAO_TYPE = 5;
+const int MAX_VAO_TYPE = 8;
 
 #define WINDOW_WITDH	800
 #define WINDOW_HEIGHT	600
@@ -28,13 +28,12 @@ const int MAX_VAO_TYPE = 5;
 #define CAMERA_POS		glm::vec3(0.0, 0.0, 50.0)
 #define OBJECT_COLOR	glm::vec3(1.0, 1.0, 1.0)
 #define LIGHT_AMBIENT	glm::vec3(0.1, 0.1, 0.1)
-#define LIGHT_POS		glm::vec3(1000.0, 1000.0, 100.0)
 #define LIGHT_COLOR		glm::vec3(1.0, 1.0, 1.0)
 
-#define FILE_NAME		"Model.obj"
+#define FILE_NAME		"ghost.obj"
 #define BEAD_FILE_NAME	"bead.obj"
 #define POWERBEAD_FILE_NAME	"bead.obj"
-#define CUBE_FILE_NAME	"gamecube-logo-cube.obj"
+#define CUBE_FILE_NAME	"block.obj"
 
 #define MAP_SIZE 30
 #define MAX_TIME 120
@@ -95,6 +94,10 @@ struct Vector3 {
 		return glm::vec3(this->x, this->y, this->z);
 	}
 
+	glm::vec3 GetGlmVec3(float gap) {
+		return glm::vec3(this->x, this->y + gap, this->z);
+	}
+
 	Vector3() {}
 };
 
@@ -125,6 +128,7 @@ enum ObjectType {
     POWERBEAD,
 	MAP,
 	ROAD,
+	BOTTOM,
 };
 
 // Map е╦ют
@@ -231,3 +235,5 @@ const float blockVertex[6][6][2][3] = {
 		{	{-0.5f, 0.5f, -0.5f},	{0.0f, 1.0f, 0.0f}	}
 	}
 };
+
+static Vector3 lightPos = Vector3(0, 20, 0);

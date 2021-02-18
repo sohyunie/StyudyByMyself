@@ -36,11 +36,12 @@ void Ghost::DrawObject(GLuint s_program) {
 	glm::mat4 R = glm::mat4(1.0f); //--- rotation matrix
 	glm::mat4 T = glm::mat4(1.0f); //--- transformation matrix
 	glm::mat4 S = glm::mat4(1.0f); //--- rotation matrix
-	T = glm::translate(T, this->position.GetGlmVec3()); //--- x축으로 translation
-	R = glm::rotate(R, glm::radians(45.0f), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
+	T = glm::translate(T, this->position.GetGlmVec3(-2)); //--- x축으로 translation
+	R = glm::rotate(R, glm::radians(rotateAngle+=10), this->rotate.GetGlmVec3()); //--- z축에대하여 회전
 	S = glm::scale(glm::mat4(1.0f), this->scale.GetGlmVec3());
 	STR = T * S * R; //--- 합성 변환 행렬: translate -> rotate
 
+	Vector3 lightColor = InGameManager::GetInstance().GetLightColor();
 	glm::vec3 cameraPos = InGameManager::GetInstance().GetCameraPos();
 	glm::vec3 cameraDirection = InGameManager::GetInstance().GetCameraDirection();
 	glm::vec3 cameraUp = InGameManager::GetInstance().GetCameraUp();
@@ -58,10 +59,10 @@ void Ghost::DrawObject(GLuint s_program) {
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, glm::value_ptr(proj));
 
 	int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
-	glUniform3f(lightPosLocation, 0.0, 0.0, 5.0);
+	glUniform3f(lightPosLocation, lightPos.x, lightPos.y, lightPos.z);
 
 	int lightColorLocation = glGetUniformLocation(s_program, "g_lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
-	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
+	glUniform3f(lightColorLocation, lightColor.x, lightColor.y, lightColor.z);
 
 	int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
 	glUniform3f(objColorLocation, this->color.x, this->color.y, this->color.z);

@@ -2,14 +2,17 @@
 
 in vec3 v2f_normal;
 in vec3 v2f_worldPos; 
+in vec2 TexCoord;
 
 out vec4 out_color;
 
+uniform sampler2D outTexture;
 uniform vec3 g_lightAmbient;
 uniform vec3 g_lightPos;
 uniform vec3 g_lightColor;
 uniform vec3 g_objectColor;
 uniform vec3 g_cameraPos;
+uniform int flag;
 
 void main(void)
 {	
@@ -28,6 +31,8 @@ void main(void)
 	vec3 specular = specularLight * g_lightColor;
 
 	vec3 result = (ambient + diffuse + specular) * g_objectColor;
-
+	
 	out_color = vec4(result, 1.0);
+	if (flag == 1) 
+		out_color = texture(outTexture, TexCoord) * vec4(result, 1.0);
 }

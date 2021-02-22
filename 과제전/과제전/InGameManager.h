@@ -9,6 +9,8 @@ class Object;
 class InGameUI;
 class DynamicObject;
 class Bottom;
+class StartSceneUI;
+class EndingScene;
 
 #include <algorithm>
 #include <list>
@@ -27,6 +29,7 @@ private:
     Block* block2;
     //Ghost* ghost[20];
     list<Ghost*> vGhost;
+    list<GhostCollisionData*> collisionGhost;
     Object* object;
     ObjData* objData[MAX_VAO_TYPE];
     Player* player;
@@ -62,8 +65,15 @@ private:
     bool CollideBead = false;
     bool isPowerBead = false;
     bool isInitComplete = false;
+    bool DeleteHP = false;
     int ghostID;
     Vector3 lightColor = Vector3(1,1,1);
+    GAMESTATE state;
+    GLuint texture[3];
+    StartSceneUI* startUI;
+    EndingScene* endingUI;
+    unsigned int flaglocation;
+
 public:
     static InGameManager& GetInstance() {
         if (instance == NULL) {
@@ -83,6 +93,7 @@ public:
     float GetIngameTime() { return this->inGameTime; }
     float currentTime() { return MAX_TIME - round(this->inGameTime / 100) / 10 + this->additonalTime; }
     float GetTime();
+    float GetPlayerHP();
     //int GetBeadNumber() { return this->beadNumber; }
     bool GetPresence() { return this->isBead; }
     void CalculateTime();
@@ -96,6 +107,9 @@ public:
     float CountBeadAmount();
     float CalculateBeadAmount();
 
+    void DrawTextureImage();
+    GLuint GetTexture(TextureType type);
+
     bool GetIsDrawFill() { return this->isDrawFill; }
     glm::vec3 GetCameraPos() { return this->cameraPos; }
     glm::vec3 GetCameraDirection() { return this->cameraDirection; }
@@ -107,6 +121,7 @@ public:
     Vector3 GetLightColor() { return this->lightColor; }
     void SetLightColor(Vector3 color) { this->lightColor = color; }
     Ghost* GetGhost();
+    // float GetHP();
 
     Player* GetPlayer() { return this->player; }    // GM에서 player를 불러서 사용하고 싶으니까 여기서 getplayer를 만들어서 한 싱글턴 구조 안에서 player불러서 사용할 수 있게 함
     MapLoader* LoadMap() { return this->map; }
@@ -117,6 +132,10 @@ public:
 
     GLint GetVAO(ObjectType type) { return this->VAO[type]; }
     ObjData* GetObjData(ObjectType type) { return this->objData[type]; }
+    GAMESTATE GetState() { return this->state; }
+    void SetState(GAMESTATE state) { this->state = state; }
+    void InitTexture();
+
 
 protected:
 

@@ -36,6 +36,7 @@
     <ClInclude Include="Standard.h" />
     <ClInclude Include="StartSceneUI.h" />
     <ClInclude Include="StaticObject.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Bead.cpp" />

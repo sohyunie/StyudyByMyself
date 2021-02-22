@@ -1,5 +1,5 @@
 #pragma once
-
+#define STB_IMAGE_IMPLEMENTATION
 #pragma warning(disable:4996)
 #include <iostream>
 #include <string>
@@ -19,8 +19,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+class Ghost;
+
 using namespace std;
-const int MAX_VAO_TYPE = 8;
+const int MAX_VAO_TYPE = 9;
 
 #define WINDOW_WITDH	800
 #define WINDOW_HEIGHT	600
@@ -39,8 +41,10 @@ const int MAX_VAO_TYPE = 8;
 #define MAX_TIME 120
 #define GHOST_SPAWN_TIME 3 * 60 * 60
 #define POWER_BEAD_TIME 2.5 * 60 * 60
+#define COLLISION_TIME 0.5 * 60 * 60
 
-#define NORMAL_SPEED 0.002
+#define GHOST_SPEED 0.002
+#define NORMAL_SPEED 0.003
 #define POWER_SPEED 0.004
 struct ObjData {
 	float* vPosData;	// 값이 하나만 있어도 되는 건 그냥 변수로/ 아니고 여러개가 나열되고 필요한 것들은 *로 받는다.
@@ -129,6 +133,13 @@ enum ObjectType {
 	MAP,
 	ROAD,
 	BOTTOM,
+	TEXTURE,
+};
+
+enum class TextureType {
+	LOBBY,
+	GAMEOVER,
+	CLEAR,
 };
 
 // Map 타입
@@ -147,6 +158,13 @@ enum class DIRECTION {
 	DOWN,
 	LEFT,
 	DIR_NONE
+};
+
+enum class GAMESTATE {
+	LOBBY,
+	INGAME,
+	GAMEOVER,
+	CLEAR,
 };
 
 //DIRECTION operator++(DIRECTION& d)
@@ -169,6 +187,23 @@ struct Shape {
 	bool isAlive;
 	int hitCount = 3;
 	float speed;
+};
+
+struct GhostCollisionData {
+	Ghost* ghost = nullptr;
+	float time;
+
+	GhostCollisionData(Ghost* ghost, float time) {
+		this->ghost = ghost;
+		this->time = time;
+	}
+
+	//bool operator== (GhostCollisionData value) {
+	//	bool isSame = false;
+	//	if (value.ghost != nullptr && ghost != nullptr)
+	//		isSame = ghost->GetID() == value.ghost->GetID();
+	//	return isSame;
+	//}
 };
 
 //float deltaTime = 0.0f;
@@ -234,6 +269,16 @@ const float blockVertex[6][6][2][3] = {
 		{	{-0.5f, 0.5f,  0.5f},	{0.0f, 1.0f, 0.0f}	},
 		{	{-0.5f, 0.5f, -0.5f},	{0.0f, 1.0f, 0.0f}	}
 	}
+};
+
+const float Background[] = {
+	-1.0,1.0,-1.0, 0.0,1.0,0.0, 1.0,1.0,
+	-1.0,-1.0,-1.0, 0.0,1.0,0.0, 1.0,0.0,
+	1.0,1.0,-1.0, 0.0,1.0,0.0, 0.0,1.0,
+
+	-1.0,-1.0,-1.0, 0.0,1.0,0.0, 1.0,0.0,
+	1.0,-1.0,-1.0, 0.0,1.0,0.0, 0.0,0.0,
+	1.0,1.0,-1.0, 0.0,1.0,0.0, 0.0,1.0
 };
 
 static Vector3 lightPos = Vector3(0, 20, 0);

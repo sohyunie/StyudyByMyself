@@ -10,6 +10,10 @@
 #include "MapLoader.h"
 #include "InGameUI.h"
 #include "Bottom.h"
+#include "ReadObj.h"
+#include "StartSceneUI.h"
+#include "EndingScene.h"
+#include "stb_image.h"
 //#include "Object.h"
 
 GLchar* vertexsource, * fragmentsource; // 소스코드 저장 변수
@@ -24,7 +28,7 @@ char* filetobuf(const char* file)
 	FILE* fptr;
 	long length;
 	char* buf;
-	fptr = fopen(file, "rb"); // Open file for reading 나빳어ㅐ
+	fptr = fopen(file, "rb"); // Open file for reading
 	if (!fptr) // Return NULL on failure
 		return NULL;
 	fseek(fptr, 0, SEEK_END); // Seek to the end of the file
@@ -80,23 +84,23 @@ void InGameManager::CalculateTime() {
 
 
 void InGameManager::CameraSetting() {
+	if (this->state == GAMESTATE::INGAME) {
+		if (this->isFPS == true) {
+			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
 
-	if (this->isFPS == true) {
-		Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
-
-		this->cameraDirection = dir.GetGlmVec3();
-		this->cameraPos = this->player->GetPosition().GetGlmVec3();
-		this->cameraPos.y += 1;
-		//this->cameraPos.y += 1;
+			this->cameraDirection = dir.GetGlmVec3();
+			this->cameraPos = this->player->GetPosition().GetGlmVec3();
+			this->cameraPos.y += 1;
+			//this->cameraPos.y += 1;
+		}
+		else {
+			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
+			this->cameraDirection = dir.GetGlmVec3();
+			this->cameraDirection.y += 5;
+			this->cameraPos = this->player->GetPosition().GetGlmVec3();
+			this->cameraPos.y += 100;
+		}
 	}
-	else {
-		Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, 0, this->player->GetPosition().z + this->player->dir.z);
-		this->cameraDirection = dir.GetGlmVec3();
-		this->cameraDirection.y += 5;
-		this->cameraPos = this->player->GetPosition().GetGlmVec3();
-		this->cameraPos.y += 100;
-	}
-
 }
 
 GLuint s_program;
@@ -252,6 +256,82 @@ GLvoid InGameManager::InitBuffer() {
 	glGenBuffers(1, &this->EBO[BOTTOM]);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO[BOTTOM]);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->objData[BOTTOM]->indexCount * sizeof(int), this->objData[BOTTOM]->indexData, GL_STATIC_DRAW);
+
+
+	//Texture
+	//glGenVertexArrays(1, &this->VAO[TEXTURE]);
+	//glGenBuffers(3, this->VBO[TEXTURE]);
+	//glBindVertexArray(VAO[TEXTURE]);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO[TEXTURE][0]);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(Background), Background, GL_STATIC_DRAW);
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); //--- 위치 속성
+	//glEnableVertexAttribArray(0);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); //--- 노말값 속성
+	//glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); //--- 텍스처 좌표 속성
+	//glEnableVertexAttribArray(2);
+}
+
+void InGameManager::InitTexture() {
+	//Texture
+	glGenVertexArrays(1, &this->VAO[TEXTURE]);
+	glBindVertexArray(VAO[TEXTURE]);
+	glGenBuffers(3, this->VBO[TEXTURE]);
+
+	glBindBuffer(GL_ARRAY_BUFFER, VBO[TEXTURE][0]);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(Background), Background, GL_STATIC_DRAW);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0); //--- 위치 속성
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float))); //--- 노말값 속성
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float))); //--- 텍스처 좌표 속성
+	glEnableVertexAttribArray(2);
+
+	int width[10], height[10], nrChannels[10];
+	stbi_set_flip_vertically_on_load(true);
+
+	glGenTextures(1, &this->texture[(int)TextureType::LOBBY]);
+	glBindTexture(GL_TEXTURE_2D, this->texture[(int)TextureType::LOBBY]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	unsigned char* data1 = stbi_load("gameover.png", &width[(int)TextureType::LOBBY], &height[(int)TextureType::LOBBY], &nrChannels[(int)TextureType::LOBBY], 0);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::LOBBY], height[(int)TextureType::LOBBY], 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data1);
+
+	glGenTextures(1, &this->texture[(int)TextureType::GAMEOVER]);
+	glBindTexture(GL_TEXTURE_2D, this->texture[(int)TextureType::GAMEOVER]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	unsigned char* data2 = stbi_load("gclear.png", &width[(int)TextureType::GAMEOVER], &height[(int)TextureType::GAMEOVER], &nrChannels[(int)TextureType::GAMEOVER], 0);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::GAMEOVER], height[(int)TextureType::GAMEOVER], 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data2);
+
+	glGenTextures(1, &this->texture[(int)TextureType::CLEAR]);
+	glBindTexture(GL_TEXTURE_2D, this->texture[(int)TextureType::CLEAR]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	unsigned char* data3 = stbi_load("bg.png", &width[(int)TextureType::CLEAR], &height[(int)TextureType::CLEAR], &nrChannels[(int)TextureType::CLEAR], 0);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::CLEAR], height[(int)TextureType::CLEAR], 0, GL_RGB, GL_UNSIGNED_BYTE, data3);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data3);
+}
+
+GLuint InGameManager::GetTexture(TextureType type) {
+	return this->texture[(int)type];
 }
 
 void InGameManager::CreateGhost(int i, int j, Vector3 position) {
@@ -279,28 +359,34 @@ Ghost* InGameManager::FindGhostByID(int id) {
 
 GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
-
 	std::list<Ghost*>::iterator it;
-	it = vGhost.begin();
-	while (it != vGhost.end()) 
-	{
-		if ((*it)->GetIsActive()) {
-			(*it)->DrawObject(s_program);
+
+	this->state= GAMESTATE::INGAME;
+	switch (this->state) {
+	case GAMESTATE::LOBBY :
+		this->startUI->DrawTextureImage(s_program);
+		break;
+	case GAMESTATE::INGAME:
+		it = vGhost.begin();
+		while (it != vGhost.end())
+		{
+			if ((*it)->GetIsActive()) {
+				(*it)->DrawObject(s_program);
+			}
+			it++;
 		}
-		it++;
+		this->player->DrawObject(s_program);
+		this->map->DrawMap(s_program);
+		this->ingameUI->PrintInGameUI(s_program);
+		this->bottom->DrawObject(s_program);
+		break;
+	case GAMESTATE::GAMEOVER:
+		this->endingUI->DrawTextureImage(s_program, TextureType::GAMEOVER);
+		break;
+	case GAMESTATE::CLEAR:
+		this->endingUI->DrawTextureImage(s_program, TextureType::CLEAR);
+		break;
 	}
-	//for(Ghost* g : this->vGhost) {
-	//	if (g->GetIsActive()) {
-	//		g->DrawObject(s_program);
-	//	}
-	//}
-	//this->ghost->DrawObject(s_program);
-	this->player->DrawObject(s_program);
-	this->map->DrawMap(s_program);
-	this->ingameUI->PrintInGameUI(s_program);
-	this->bottom->DrawObject(s_program);
-	//this->bead->DrawObject(s_program, this->VAO[BEAD], this->gobj[BEAD]->indexCount);
-	//this->powerBead->DrawObject(s_program, this->VAO[POWERBEAD], this->gobj[POWERBEAD]->indexCount);
 }
 
 Vector3 InGameManager::DirToVec3(DIRECTION dir) {
@@ -335,6 +421,14 @@ float InGameManager::GetTime() {
 	return lastFrame;
 }
 
+float InGameManager::GetPlayerHP() {
+	if (this->DeleteHP) {
+		this->GetPlayer()->hp -= 5;
+		this->DeleteHP = false;
+	}
+	return this->GetPlayer()->hp;
+}
+
 void InGameManager::ChangeSpeed(float speed) {
 	this->speed = speed;
 }
@@ -348,7 +442,7 @@ Vector3 Lerp(Vector3 value1, Vector3 value2, float amount)
 }
 
 void InGameManager::CheckDirection(DynamicObject *dObject) {
-	float speed = (dObject->GetType() == ObjectType::GHOST) ? NORMAL_SPEED : this->speed;
+	float speed = (dObject->GetType() == ObjectType::GHOST) ? GHOST_SPEED : this->speed;
 
 	// 회전 관련 코드
 	if (dObject->isChangeCameraDir) {
@@ -402,7 +496,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
 			if (dObject->GetPosition() == target->GetPosition()) {
-				cout << "Collision!!" << endl;
+				//cout << "Collision!!" << endl;
 				dObject->board_i = dObject->temp_i;
 				dObject->board_j = dObject->temp_j;
 				dObject->acc = 0;
@@ -441,7 +535,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
 			if (dObject->GetPosition() == target->GetPosition()) {
-				cout << "Collision!!" << endl;
+				//cout << "Collision!!" << endl;
 				dObject->board_i = dObject->temp_i;
 				dObject->board_j = dObject->temp_j;
 				dObject->acc = 0;
@@ -480,7 +574,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
 			if (dObject->GetPosition() == target->GetPosition()) {
-				cout << "Collision!!" << endl;
+				//cout << "Collision!!" << endl;
 				dObject->board_i = dObject->temp_i;
 				dObject->board_j = dObject->temp_j;
 				dObject->acc = 0;
@@ -519,7 +613,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 		if (dObject->isNewMapCollision) { // 다음 칸 도착했으면 그 다음 칸 찾기
 			if (dObject->GetPosition() == target->GetPosition()) {
-				cout << "Collision!!" << endl;
+				//cout << "Collision!!" << endl;
 				dObject->board_i = dObject->temp_i;
 				dObject->board_j = dObject->temp_j;
 				dObject->acc = 0;
@@ -549,7 +643,8 @@ default_random_engine dreColor_light((size_t)time(NULL));
 normal_distribution <float>uidColor_light{ 0.0,1.0 };
 
 void InGameManager::TimerFunction() {
-
+	if (this->state != GAMESTATE::INGAME)
+		return;
 	//ghostSpawnRunningTime += this->GetDeltaTime();
 	//if (ghostSpawnRunningTime > GHOST_SPAWN_TIME) {
 	//	ghostSpawnRunningTime = 0;
@@ -655,35 +750,43 @@ void InGameManager::TimerFunction() {
 				ghost = (*it);
 			}
 			else {
-				this->isGhost = true;
-				if (this->isGhost == true) {
-					player->hp = -5.0f;
-					isGhost = false;
+				bool isCollisionGhost = false;
+
+				if (!isCollisionGhost) {
+					this->GetPlayer()->hp -= 5;
+					this->collisionGhost.push_back(new GhostCollisionData((*it), COLLISION_TIME));
 				}
+
+				// 충돌했던 고스트인지 확인, 이미 충돌되어 있으면 isCollisionGhost를 true로 만들어서 2초동안 체력 안깎이게
+				for (GhostCollisionData* ghost : this->collisionGhost) {
+					if ((*it)->GetID() == ghost->ghost->GetID()) {
+						isCollisionGhost = true;
+						break;
+					}
+				}
+
 			}
 		}
 		it++;
 	}
 
-	if(ghost != nullptr)
+	GhostCollisionData* TimeOutGhost = nullptr;	// 충돌하고 2초 지난 ghost
+	for (GhostCollisionData *ghost : this->collisionGhost) {
+		ghost->time -= this->GetDeltaTime();
+		if (ghost->time < 0) {
+			TimeOutGhost = ghost;
+			break;
+		}
+	}
+
+	// 무적 상태일 때 ghost 지우기
+	if (ghost != nullptr)
 		this->DeleteGhost(ghost);
 
-	// Player to Ghost
-	//for (Ghost* g : this->vGhost) {
-	//	bool isCollision = g->CollisionCheck(*this->player);
-	//	if (isCollision) {
-	//		if (true) {
-	//			this->DeleteGhost(g);
-	//		}
-	//		else {
-	//			this->isGhost = true;
-	//			if (this->isGhost == true) {
-	//				player->hp = -5.0f;
-	//				isGhost = false;
-	//			}
-	//		}
-	//	}
-	//}
+	// 시간 끝난 ghost 지우기 ; 게임 내에서 삭제하는 게 아니라 2초 다시 셋팅해준다고 생각하면 됨
+	if (TimeOutGhost != nullptr)
+		this->collisionGhost.remove(TimeOutGhost);
+
 	this->GetTime();
 	this->CalculateTime();
 	this->CameraSetting();
@@ -713,6 +816,11 @@ GLvoid InGameManager::InitShader() {
 // + Obj 파일 정보 담아두는 코드
 GLvoid InGameManager::InitObject() 
 {
+	this->SetState(GAMESTATE::LOBBY);
+
+	this->startUI = new StartSceneUI();
+	this->endingUI = new EndingScene();
+	this->InitTexture();
 	//this->block = new Block(Vector3(0, 0, 0));
 	//this->block2 = new Block(Vector3(10.0, 0, 0));
 

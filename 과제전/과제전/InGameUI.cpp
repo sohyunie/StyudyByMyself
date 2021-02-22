@@ -8,6 +8,7 @@ InGameUI::InGameUI() {
 
 void InGameUI::PrintInGameUI(GLuint s_program) {
         if (this->isPlayGame == true) {
+            // Time UI
             glClearColor(0.0, 0.0, 0.0, 0.0);
             string text = "TIME : " + to_string(InGameManager::GetInstance().currentTime()).substr(0, 4);
             const char* stringTime = text.data();
@@ -19,6 +20,7 @@ void InGameUI::PrintInGameUI(GLuint s_program) {
                 glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, stringTime[i]);
             }
             
+            // Bead UI
              string beadText = "Bead : " + to_string(InGameManager::GetInstance().CalculateBeadAmount());
              const char* stringBeadNum = beadText.data();
              glRasterPos2f(-0.9, 0.8);  // 문자 출력할 위치 설정
@@ -26,6 +28,16 @@ void InGameUI::PrintInGameUI(GLuint s_program) {
              len = (int)strlen(stringBeadNum);
              for (int i = 0; i < len; i++) {
                  glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, stringBeadNum[i]);
+             }
+
+             // Hp UI
+             string HpText = "HP : " + to_string(InGameManager::GetInstance().GetPlayerHP());
+             const char* stringHp = HpText.data();
+             glRasterPos2f(-0.9, 0.7);  // 문자 출력할 위치 설정
+
+             len = (int)strlen(stringHp);
+             for (int i = 0; i < len; i++) {
+                 glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, stringHp[i]);
              }
         }
         //else {

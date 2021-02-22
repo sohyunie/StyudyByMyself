@@ -297,7 +297,7 @@ void InGameManager::InitTexture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	unsigned char* data1 = stbi_load("gameover.png", &width[(int)TextureType::LOBBY], &height[(int)TextureType::LOBBY], &nrChannels[(int)TextureType::LOBBY], 0);
+	unsigned char* data1 = stbi_load("lobby.png", &width[(int)TextureType::LOBBY], &height[(int)TextureType::LOBBY], &nrChannels[(int)TextureType::LOBBY], 0);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::LOBBY], height[(int)TextureType::LOBBY], 0, GL_RGB, GL_UNSIGNED_BYTE, data1);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -310,7 +310,7 @@ void InGameManager::InitTexture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	unsigned char* data2 = stbi_load("gclear.png", &width[(int)TextureType::GAMEOVER], &height[(int)TextureType::GAMEOVER], &nrChannels[(int)TextureType::GAMEOVER], 0);
+	unsigned char* data2 = stbi_load("gameover.png", &width[(int)TextureType::GAMEOVER], &height[(int)TextureType::GAMEOVER], &nrChannels[(int)TextureType::GAMEOVER], 0);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::GAMEOVER], height[(int)TextureType::GAMEOVER], 0, GL_RGB, GL_UNSIGNED_BYTE, data2);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -323,7 +323,7 @@ void InGameManager::InitTexture() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	unsigned char* data3 = stbi_load("bg.png", &width[(int)TextureType::CLEAR], &height[(int)TextureType::CLEAR], &nrChannels[(int)TextureType::CLEAR], 0);
+	unsigned char* data3 = stbi_load("clear.png", &width[(int)TextureType::CLEAR], &height[(int)TextureType::CLEAR], &nrChannels[(int)TextureType::CLEAR], 0);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::CLEAR], height[(int)TextureType::CLEAR], 0, GL_RGB, GL_UNSIGNED_BYTE, data3);
 	glGenerateMipmap(GL_TEXTURE_2D);
@@ -361,7 +361,7 @@ GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
 	std::list<Ghost*>::iterator it;
 
-	this->state= GAMESTATE::INGAME;
+	//this->state= GAMESTATE::INGAME;
 	switch (this->state) {
 	case GAMESTATE::LOBBY :
 		this->startUI->DrawTextureImage(s_program);
@@ -377,8 +377,8 @@ GLvoid InGameManager::DrawScene() {
 		}
 		this->player->DrawObject(s_program);
 		this->map->DrawMap(s_program);
-		this->ingameUI->PrintInGameUI(s_program);
 		this->bottom->DrawObject(s_program);
+		this->ingameUI->PrintInGameUI(s_program);
 		break;
 	case GAMESTATE::GAMEOVER:
 		this->endingUI->DrawTextureImage(s_program, TextureType::GAMEOVER);
@@ -406,12 +406,8 @@ float InGameManager::CountBeadAmount() {
 	return this->beadNumber++;
 }
 
-float InGameManager::CalculateBeadAmount() {
-	if (this->EatBead) {
-		this->beadNumber--;
-		this->EatBead = false;
-	}
-	return this->beadNumber;
+void InGameManager::DecreaseBeadNumber() {
+	this->beadNumber--;
 }
 
 float InGameManager::GetTime() {
@@ -431,6 +427,64 @@ float InGameManager::GetPlayerHP() {
 
 void InGameManager::ChangeSpeed(float speed) {
 	this->speed = speed;
+}
+
+void InGameManager::SetState(GAMESTATE state) {
+	this->state = state; 
+	switch (state) {
+	case GAMESTATE::CLEAR :
+		RecordTime();
+		break;
+	case GAMESTATE::GAMEOVER :
+		break;
+	}
+}
+
+void InGameManager::InitGame() {
+	delete this->player;
+	delete this->map;
+	delete this->bead;
+	delete this->powerBead;
+	delete this->ingameUI;
+	delete this->bottom;
+	this->beadNumber = 0;
+	this->inGameTime = 0;
+	this->player->hp = 100.0;
+
+	this->InitObject();
+}
+
+void InGameManager::RecordTime() {
+	ofstream writeFile;
+	writeFile.open("test.txt", ios::app);    //파일 열기(파일이 없으면 만들어짐)
+
+	string str = to_string(this->currentTime()) + " ";
+	writeFile.write(str.c_str(), str.size());
+
+	writeFile.close();    //꼭 닫아주기
+}
+
+string InGameManager::GetBestRecord() { //[TODO] 계속 불리지 않도록 수정
+	ifstream readFile;
+	readFile.open("test.txt");    //파일 열기
+	float bestRecord = 0;
+	if (readFile.is_open())
+	{
+		while (!readFile.eof())
+		{
+			string str;
+			getline(readFile, str);
+			if (str == "")
+				break;
+			float record = stof(str);
+			if (bestRecord < record)
+				bestRecord = record;
+
+			//cout << str << endl;    //지금은 읽은 문자열 바로 출력.
+		}
+		readFile.close();    //파일 닫아줍니다.
+	}
+	return to_string(bestRecord);
 }
 
 
@@ -687,7 +741,9 @@ void InGameManager::TimerFunction() {
 					this->player->temp_i = i;
 					this->player->temp_j = j;
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
-					this->EatBead = true;
+					this->DecreaseBeadNumber();
+					if(this->GetBeadCount() <= 0)
+						this->SetState(GAMESTATE::CLEAR);
 					// cout << "beadNumber: " << this->beadNumber << endl;
 					break;
 				case ObjectType::POWERBEAD:
@@ -752,17 +808,20 @@ void InGameManager::TimerFunction() {
 			else {
 				bool isCollisionGhost = false;
 
-				if (!isCollisionGhost) {
-					this->GetPlayer()->hp -= 5;
-					this->collisionGhost.push_back(new GhostCollisionData((*it), COLLISION_TIME));
-				}
-
 				// 충돌했던 고스트인지 확인, 이미 충돌되어 있으면 isCollisionGhost를 true로 만들어서 2초동안 체력 안깎이게
 				for (GhostCollisionData* ghost : this->collisionGhost) {
 					if ((*it)->GetID() == ghost->ghost->GetID()) {
 						isCollisionGhost = true;
 						break;
 					}
+				}
+
+				if (!isCollisionGhost) {
+					this->GetPlayer()->hp -= 5;
+					this->collisionGhost.push_back(new GhostCollisionData((*it), COLLISION_TIME));
+					cout << this->GetPlayer()->hp << endl;
+					if (this->GetPlayer()->hp <= 0)
+						this->SetState(GAMESTATE::GAMEOVER);
 				}
 
 			}

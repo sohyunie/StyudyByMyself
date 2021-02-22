@@ -166,17 +166,6 @@ enum class GAMESTATE {
 	GAMEOVER,
 	CLEAR,
 };
-
-//DIRECTION operator++(DIRECTION& d)
-//{
-//	return d == DIRECTION::LEFT ? DIRECTION::UP : DIRECTION{ ++d };
-//}
-//
-//DIRECTION operator--(DIRECTION& d)
-//{
-//	return d == DIRECTION::UP ? DIRECTION::LEFT : DIRECTION{ --d };
-//}
-
 struct Shape {
 	BOARD_TYPE type;
 	Vector3 color;

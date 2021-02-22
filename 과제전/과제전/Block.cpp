@@ -48,6 +48,9 @@ void Block::DrawObject(GLuint s_program) {
 	unsigned int projectionLocation = glGetUniformLocation(s_program, "g_projection");
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
+	unsigned int flaglocation = glGetUniformLocation(s_program, "flag");
+	glUniform1i(flaglocation, 0);
+
 	int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos АЊ РќДо: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, lightPos.x, lightPos.y, lightPos.z);
 

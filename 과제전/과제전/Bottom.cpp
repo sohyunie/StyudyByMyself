@@ -60,6 +60,9 @@ void Bottom::DrawObject(GLuint s_program) {
 	int ViewLocation = glGetUniformLocation(s_program, "g_cameraPos");
 	glUniform3f(ViewLocation, cameraPos.x, cameraPos.y, cameraPos.z);
 
+	unsigned int flaglocation = glGetUniformLocation(s_program, "flag");
+	glUniform1i(flaglocation, 0);
+
 	// 사용할 VAO 불러오기
 	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->type));
 	// 삼각형 그리기

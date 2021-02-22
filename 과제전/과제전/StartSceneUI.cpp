@@ -38,6 +38,15 @@ void StartSceneUI::DrawTextureImage(GLuint s_program) {
 	unsigned int flaglocation = glGetUniformLocation(s_program, "flag");
 	glUniform1i(flaglocation, 1);
 
+	int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
+	glUniform3f(lightPosLocation, 0,0,0);
+
+	int lightColorLocation = glGetUniformLocation(s_program, "g_lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
+	glUniform3f(lightColorLocation, 1,1,1);
+
+	int objColorLocation = glGetUniformLocation(s_program, "g_objectColor"); //--- object Color값 전달: (1.0, 0.5, 0.3)의 색
+	glUniform3f(objColorLocation, 1,1,1);
+
 	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->objectType));
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, InGameManager::GetInstance().GetTexture(this->type));

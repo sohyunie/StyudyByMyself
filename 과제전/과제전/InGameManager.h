@@ -91,8 +91,10 @@ public:
     float GetDegreeLightPos() { return this->degreeLightPos; }
     float GetDeltaTime() { return this->deltaTime; }
     float GetIngameTime() { return this->inGameTime; }
-    float currentTime() { return MAX_TIME - round(this->inGameTime / 100) / 10 + this->additonalTime; }
+    float currentTime() { return round(this->inGameTime / 100) / 10 + this->additonalTime; }
     float GetTime();
+    void RecordTime();
+    string GetBestRecord();
     float GetPlayerHP();
     //int GetBeadNumber() { return this->beadNumber; }
     bool GetPresence() { return this->isBead; }
@@ -105,7 +107,7 @@ public:
     void DeleteGhost(Ghost* g);
     Ghost* FindGhostByID(int id);
     float CountBeadAmount();
-    float CalculateBeadAmount();
+    void DecreaseBeadNumber();
 
     void DrawTextureImage();
     GLuint GetTexture(TextureType type);
@@ -129,11 +131,13 @@ public:
     GLvoid DrawMap(){}
     bool GetFPS() { return this->isFPS; }
     void ChangeSpeed(float speed);
+    void InitGame();
 
     GLint GetVAO(ObjectType type) { return this->VAO[type]; }
     ObjData* GetObjData(ObjectType type) { return this->objData[type]; }
     GAMESTATE GetState() { return this->state; }
-    void SetState(GAMESTATE state) { this->state = state; }
+    int GetBeadCount() { return this->beadNumber; }
+    void SetState(GAMESTATE state);
     void InitTexture();
 
 

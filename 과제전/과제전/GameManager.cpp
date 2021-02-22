@@ -45,11 +45,22 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	Vector3 playerPos;
 	switch (key)
 	{
+	case ((char)13):	// enter key
+		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY)
+			InGameManager::GetInstance().SetState(GAMESTATE::INGAME);
+		break;
 	case '1':
 		InGameManager::GetInstance().SetFPS(true);
 		break;
 	case '3':
 		InGameManager::GetInstance().SetFPS(false);
+		break;
+	case ' ':	// space bar
+		if (InGameManager::GetInstance().GetState() == GAMESTATE::GAMEOVER ||
+			InGameManager::GetInstance().GetState() == GAMESTATE::CLEAR) {
+			InGameManager::GetInstance().InitGame();
+			InGameManager::GetInstance().SetState(GAMESTATE::LOBBY);
+		}
 		break;
 	}
 
@@ -73,12 +84,6 @@ void processSpecialKeys(int key, int x, int y)
 	Vector3 playerPos = Vector3();
 	switch (key)
 	{
-	case GLUT_KEY_DOWN:
-		//InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::DOWN;
-		break;
-	case GLUT_KEY_UP:
-		//InGameManager::GetInstance().GetPlayer()->newDirection = DIRECTION::UP;
-		break;
 	case GLUT_KEY_RIGHT:
 		switch (InGameManager::GetInstance().GetPlayer()->newDirection) {
 		case DIRECTION::DIR_NONE:

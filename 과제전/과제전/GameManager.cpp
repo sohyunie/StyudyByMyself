@@ -2,7 +2,13 @@
 #include "InGameManager.h"
 #include "Player.h"
 
+void drawScene();
+void drawSceneSubWindow();
+
 using namespace std;
+
+int subWindow;
+int mainWindow;
 
 void InitBuffer()
 {
@@ -14,9 +20,15 @@ void InitShader()
 	InGameManager::GetInstance().InitShader();
 }
 
+void DrawScene() {
+	drawScene();
+	drawSceneSubWindow();
+}
 
 GLvoid drawScene()
 {
+	glutSetWindow(mainWindow);
+	//glutSetWindow(mainWindow);
 	glClearColor(0, 0, 0, 1);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -26,12 +38,20 @@ GLvoid drawScene()
 	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	InGameManager::GetInstance().DrawScene();
+	InGameManager::GetInstance().DrawScene(true);
 	glutPostRedisplay();
 	glutSwapBuffers();
+}
 
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_CULL_FACE);
+GLvoid drawSceneSubWindow()
+{
+	glutSetWindow(subWindow);
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	InGameManager::GetInstance().DrawScene(false);
+	glutPostRedisplay();
+	glutSwapBuffers();
 }
 
 GLvoid Reshape(int w, int h)
@@ -59,7 +79,17 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 		if (InGameManager::GetInstance().GetState() == GAMESTATE::GAMEOVER ||
 			InGameManager::GetInstance().GetState() == GAMESTATE::CLEAR) {
 			InGameManager::GetInstance().InitGame();
+			InGameManager::GetInstance().SetState(GAMESTATE::INGAME);
+		}
+		break;
+	case((char)27):
+		if (InGameManager::GetInstance().GetState() == GAMESTATE::GAMEOVER ||
+			InGameManager::GetInstance().GetState() == GAMESTATE::CLEAR) {
 			InGameManager::GetInstance().SetState(GAMESTATE::LOBBY);
+			break;
+		}
+		else {
+			exit(0);
 		}
 		break;
 	}
@@ -139,7 +169,7 @@ int main(int argc, char** argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(100, 100);
 	glutInitWindowSize(WINDOW_WITDH, WINDOW_HEIGHT);
-	glutCreateWindow("Example1");
+	mainWindow = glutCreateWindow("Example1");
 
 	glewExperimental = GL_TRUE;
 	if (glewInit() != GLEW_OK)
@@ -155,11 +185,20 @@ int main(int argc, char** argv)
 	InitShader();
 	InitBuffer();
 
+
 	glutDisplayFunc(drawScene);
 	glutReshapeFunc(Reshape);
+	//glutIdleFunc(DrawScene);
+
 	glutKeyboardFunc(Keyboard);
 	glutSpecialUpFunc(releaseKey);
 	glutSpecialFunc(processSpecialKeys);
 	glutTimerFunc(50, TimerFunction, 1);
+
+	// SubWindow
+	subWindow = glutCreateSubWindow(mainWindow, 0, 0, 300, 300);
+	glutDisplayFunc(drawSceneSubWindow);
+
+
 	glutMainLoop();
 }

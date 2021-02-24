@@ -49,7 +49,7 @@ void Block::DrawObject(GLuint s_program) {
 	glUniformMatrix4fv(projectionLocation, 1, GL_FALSE, &projection[0][0]);
 
 	unsigned int flaglocation = glGetUniformLocation(s_program, "flag");
-	glUniform1i(flaglocation, 0);
+	glUniform1i(flaglocation, 2);
 
 	int lightPosLocation = glGetUniformLocation(s_program, "g_lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, lightPos.x, lightPos.y, lightPos.z);
@@ -66,5 +66,7 @@ void Block::DrawObject(GLuint s_program) {
 	// 사용할 VAO 불러오기
 	glBindVertexArray(InGameManager::GetInstance().GetVAO(this->type));
 	// 삼각형 그리기
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, InGameManager::GetInstance().GetTexture(TextureType::INGAME));
 	glDrawElements(GL_TRIANGLES, InGameManager::GetInstance().GetObjData(this->type)->indexCount, GL_UNSIGNED_INT, 0);
 }

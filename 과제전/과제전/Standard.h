@@ -37,6 +37,12 @@ const int MAX_VAO_TYPE = 9;
 #define POWERBEAD_FILE_NAME	"bead.obj"
 #define CUBE_FILE_NAME	"block.obj"
 
+//#define SOUND_FILE_NAME_INGAME_BEAD	"../sound/backgroundmusic.wav"  // 배경음악
+//#define SOUND_FILE_NAME_INGAME_POWERBEAD	"../sound/backgroundmusic.wav"
+//#define SOUND_FILE_NAME_LOBBY	"../bgm_Lobby.wav"
+//#define SOUND_FILE_NAME_GAMEOVER	"../sound/backgroundmusic.wav"
+//#define SOUND_FILE_NAME_CLEAR	"../bgm_Clear.wav"
+
 #define MAP_SIZE 30
 #define MAX_TIME 120
 #define GHOST_SPAWN_TIME 3 * 60 * 60
@@ -140,6 +146,7 @@ enum class TextureType {
 	LOBBY,
 	GAMEOVER,
 	CLEAR,
+	INGAME
 };
 
 // Map 타입

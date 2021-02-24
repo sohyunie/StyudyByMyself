@@ -16,7 +16,7 @@ uniform int flag;
 
 void main(void)
 {	
-	vec3 ambient = vec3(0.1,0.1,0.1) * g_lightColor;
+	vec3 ambient = vec3(0.5,0.5,0.5) * g_lightColor;
 
 	vec3 normalVector = normalize(v2f_normal);
 	vec3 lightDir = normalize(g_lightPos - v2f_worldPos);
@@ -35,4 +35,7 @@ void main(void)
 	out_color = vec4(result, 1.0);
 	if (flag == 1) 
 		out_color = texture(outTexture, TexCoord) * vec4(g_objectColor, 1.0);
+	else if (flag == 2)
+		out_color = texture(outTexture, TexCoord) * vec4(result, 1.0);
+
 }

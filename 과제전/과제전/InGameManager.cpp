@@ -328,6 +328,20 @@ void InGameManager::InitTexture() {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::CLEAR], height[(int)TextureType::CLEAR], 0, GL_RGB, GL_UNSIGNED_BYTE, data3);
 	glGenerateMipmap(GL_TEXTURE_2D);
 	stbi_image_free(data3);
+
+
+	glGenTextures(1, &this->texture[(int)TextureType::INGAME]);
+	glBindTexture(GL_TEXTURE_2D, this->texture[(int)TextureType::INGAME]);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	unsigned char* data4 = stbi_load("wallpaper.png", &width[(int)TextureType::INGAME], &height[(int)TextureType::INGAME], &nrChannels[(int)TextureType::INGAME], 0);
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width[(int)TextureType::INGAME], height[(int)TextureType::INGAME], 0, GL_RGB, GL_UNSIGNED_BYTE, data4);
+	glGenerateMipmap(GL_TEXTURE_2D);
+	stbi_image_free(data4);
 }
 
 GLuint InGameManager::GetTexture(TextureType type) {
@@ -357,7 +371,10 @@ Ghost* InGameManager::FindGhostByID(int id) {
 	return NULL;
 }
 
-GLvoid InGameManager::DrawScene() {
+GLvoid InGameManager::DrawScene(bool isMain) {
+	this->isFPS = isMain;
+	this->CameraSetting();
+
 	glUseProgram(s_program);
 	std::list<Ghost*>::iterator it;
 
@@ -378,7 +395,9 @@ GLvoid InGameManager::DrawScene() {
 		this->player->DrawObject(s_program);
 		this->map->DrawMap(s_program);
 		this->bottom->DrawObject(s_program);
-		this->ingameUI->PrintInGameUI(s_program);
+		if (!isMain) {
+			this->ingameUI->PrintInGameUI(s_program);
+		}
 		break;
 	case GAMESTATE::GAMEOVER:
 		this->endingUI->DrawTextureImage(s_program, TextureType::GAMEOVER);
@@ -695,6 +714,7 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 
 default_random_engine dreColor_light((size_t)time(NULL));
 normal_distribution <float>uidColor_light{ 0.0,1.0 };
+int cycleCounter = 0;
 
 void InGameManager::TimerFunction() {
 	if (this->state != GAMESTATE::INGAME)
@@ -711,12 +731,21 @@ void InGameManager::TimerFunction() {
 	//}
 	if (this->EatPowerBead == true) {
 		this->powerBeadTime += this->deltaTime;
-		lightColor.x = uidColor_light(dreColor_light);
+		cycleCounter++;
+		if (cycleCounter % 5 == 0) {
+			if (lightColor == lightColor_white) {
+				lightColor = lightColor_black;
+			}
+			else {
+				lightColor = lightColor_white;
+			}
+		}
+		/*lightColor.x = uidColor_light(dreColor_light);
 		lightColor.y = uidColor_light(dreColor_light);
-		lightColor.z = uidColor_light(dreColor_light);
+		lightColor.z = uidColor_light(dreColor_light);*/
 		if (this->powerBeadTime > POWER_BEAD_TIME) {
 			cout << this->powerBeadTime << endl;
-			lightColor = Vector3(1.0, 1.0, 1.0);
+			lightColor = lightColor_white;
 			this->EatPowerBead = false;
 			this->ChangeSpeed(NORMAL_SPEED);
 		}
@@ -848,7 +877,6 @@ void InGameManager::TimerFunction() {
 
 	this->GetTime();
 	this->CalculateTime();
-	this->CameraSetting();
 	for (Ghost* g : this->vGhost) {
 		this->CheckDirection(g);
 	}

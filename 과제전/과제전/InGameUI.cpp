@@ -10,9 +10,9 @@ void InGameUI::PrintInGameUI(GLuint s_program) {
         if (this->isPlayGame == true) {
             // Time UI
             glClearColor(0.0, 0.0, 0.0, 0.0);
-            glColor3f(1.0f, 1.0f, 1.0f);
             string text = "TIME : " + to_string(InGameManager::GetInstance().currentTime()).substr(0, 4);
             const char* stringTime = text.data();
+            glColor3f(1.0f, 1.0f, 1.0f);
             glRasterPos2f(-0.9, 0.9);  // 문자 출력할 위치 설정
 
             int len = (int)strlen(stringTime);

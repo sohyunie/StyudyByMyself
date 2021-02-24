@@ -67,9 +67,11 @@ private:
     bool isInitComplete = false;
     bool DeleteHP = false;
     int ghostID;
-    Vector3 lightColor = Vector3(1,1,1);
+    Vector3 lightColor = Vector3(1, 1, 1);
+    Vector3 lightColor_white = Vector3(1, 1, 1);
+    Vector3 lightColor_black = Vector3(0, 0, 0);
     GAMESTATE state;
-    GLuint texture[3];
+    GLuint texture[4];
     StartSceneUI* startUI;
     EndingScene* endingUI;
     unsigned int flaglocation;
@@ -82,7 +84,7 @@ public:
         return *instance;
     }
 
-	GLvoid DrawScene();
+	GLvoid DrawScene(bool isMain);
     GLvoid InitBuffer();
     GLvoid InitShader();
     GLvoid InitObject();

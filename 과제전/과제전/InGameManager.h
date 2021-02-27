@@ -57,7 +57,7 @@ private:
     glm::vec3 ghostColor = glm::vec3(0.0f, 0.0f, 0.0f);
     int beadNumber = 0;
     bool isDrawFill = true;
-    bool isFPS = false;
+    bool isFPS = true;
     bool isGhost = false;
     bool isBead = true;
     bool EatBead = false;
@@ -84,7 +84,8 @@ public:
         return *instance;
     }
 
-	GLvoid DrawScene(bool isMain);
+	GLvoid DrawScene();
+    GLvoid DrawSubScene();
     GLvoid InitBuffer();
     GLvoid InitShader();
     GLvoid InitObject();
@@ -101,7 +102,7 @@ public:
     //int GetBeadNumber() { return this->beadNumber; }
     bool GetPresence() { return this->isBead; }
     void CalculateTime();
-    void CameraSetting();
+    void CameraSetting(bool isFps);
     void TimerFunction();
     void CheckDirection(DynamicObject* dObject);
     Vector3 DirToVec3(DIRECTION dir);
@@ -110,6 +111,7 @@ public:
     Ghost* FindGhostByID(int id);
     float CountBeadAmount();
     void DecreaseBeadNumber();
+    string GetNearByGhost();
 
     void DrawTextureImage();
     GLuint GetTexture(TextureType type);

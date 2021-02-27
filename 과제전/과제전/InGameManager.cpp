@@ -83,7 +83,7 @@ void InGameManager::CalculateTime() {
 }
 
 
-void InGameManager::CameraSetting() {
+void InGameManager::CameraSetting(bool isFps) {
 	if (this->state == GAMESTATE::INGAME) {
 		if (this->isFPS == true) {
 			Vector3 dir = Vector3(this->player->GetPosition().x + this->player->dir.x, -1, this->player->GetPosition().z + this->player->dir.z);
@@ -371,12 +371,10 @@ Ghost* InGameManager::FindGhostByID(int id) {
 	return NULL;
 }
 
-GLvoid InGameManager::DrawScene(bool isMain) {
-	this->isFPS = isMain;
-	this->CameraSetting();
-
+GLvoid InGameManager::DrawScene() {
 	glUseProgram(s_program);
 	std::list<Ghost*>::iterator it;
+	this->CameraSetting(this->isFPS);
 
 	//this->state= GAMESTATE::INGAME;
 	switch (this->state) {
@@ -395,15 +393,41 @@ GLvoid InGameManager::DrawScene(bool isMain) {
 		this->player->DrawObject(s_program);
 		this->map->DrawMap(s_program);
 		this->bottom->DrawObject(s_program);
-		if (!isMain) {
-			this->ingameUI->PrintInGameUI(s_program);
-		}
 		break;
 	case GAMESTATE::GAMEOVER:
 		this->endingUI->DrawTextureImage(s_program, TextureType::GAMEOVER);
 		break;
 	case GAMESTATE::CLEAR:
 		this->endingUI->DrawTextureImage(s_program, TextureType::CLEAR);
+		break;
+	}
+}
+
+GLvoid InGameManager::DrawSubScene() {
+	this->endingUI->DrawTextureImage(s_program, TextureType::CLEAR);
+
+	std::list<Ghost*>::iterator it;
+	switch (this->state) {
+	case GAMESTATE::LOBBY:
+		break;
+	case GAMESTATE::INGAME:
+		it = vGhost.begin();
+		while (it != vGhost.end())
+		{
+			if ((*it)->GetIsActive()) {
+				(*it)->DrawObject(s_program);
+			}
+			it++;
+		}
+		this->player->DrawObject(s_program);
+		this->map->DrawMap(s_program);
+		this->bottom->DrawObject(s_program);
+		this->ingameUI->PrintInGameUI(s_program);
+		//this->ingameUI->PrintInGameUI(s_program);
+		break;
+	case GAMESTATE::GAMEOVER:
+		break;
+	case GAMESTATE::CLEAR:
 		break;
 	}
 }
@@ -504,6 +528,17 @@ string InGameManager::GetBestRecord() { //[TODO] 계속 불리지 않도록 수정
 		readFile.close();    //파일 닫아줍니다.
 	}
 	return to_string(bestRecord);
+}
+
+string InGameManager::GetNearByGhost() {
+	int count = 0;
+	for (Ghost* ghost : this->vGhost) {
+		int distance_i = abs(this->player->board_i - ghost->board_i);
+		int distance_j = abs(this->player->board_j - ghost->board_j);
+		if (distance_i < 4 && distance_j < 4)
+			count++;
+	}
+	return to_string(count);
 }
 
 
@@ -926,7 +961,7 @@ GLvoid InGameManager::InitObject()
 	this->bottom = new Bottom(Vector3(75,0,75));
 	//this->player->SetPlayerPos(this->map->boardShape[this->player->board_i][this->player->board_i]->GetPosition().GetGlmVec3());
 	this->SetCameraPos(this->player->GetPlayerPos().GetGlmVec3());
-	this->CameraSetting();
+	this->CameraSetting(this->isFPS);
 	ReadObj(FILE_NAME, this->objData[GHOST]->vPosData, this->objData[GHOST]->vNormalData, this->objData[GHOST]->vTextureCoordinateData, this->objData[GHOST]->indexData, this->objData[GHOST]->vertexCount, this->objData[GHOST]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[BEAD]->vPosData, this->objData[BEAD]->vNormalData, this->objData[BEAD]->vTextureCoordinateData, this->objData[BEAD]->indexData, this->objData[BEAD]->vertexCount, this->objData[BEAD]->indexCount);
 	ReadObj(BEAD_FILE_NAME, this->objData[POWERBEAD]->vPosData, this->objData[POWERBEAD]->vNormalData, this->objData[POWERBEAD]->vTextureCoordinateData, this->objData[POWERBEAD]->indexData, this->objData[POWERBEAD]->vertexCount, this->objData[POWERBEAD]->indexCount);

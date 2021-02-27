@@ -7,6 +7,7 @@ void drawSceneSubWindow();
 
 using namespace std;
 
+int subMainWindow;
 int subWindow;
 int mainWindow;
 
@@ -22,13 +23,12 @@ void InitShader()
 
 void DrawScene() {
 	drawScene();
-	drawSceneSubWindow();
+	//drawSceneSubWindow();
 }
 
 GLvoid drawScene()
 {
 	glutSetWindow(mainWindow);
-	//glutSetWindow(mainWindow);
 	glClearColor(0, 0, 0, 1);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -38,7 +38,7 @@ GLvoid drawScene()
 	glFrontFace(GL_CCW);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
-	InGameManager::GetInstance().DrawScene(true);
+	InGameManager::GetInstance().DrawScene();
 	glutPostRedisplay();
 	glutSwapBuffers();
 }
@@ -46,17 +46,48 @@ GLvoid drawScene()
 GLvoid drawSceneSubWindow()
 {
 	glutSetWindow(subWindow);
+	glClearColor(0, 0, 0, 1);
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	InGameManager::GetInstance().DrawScene(false);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+	glFrontFace(GL_CCW);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	InGameManager::GetInstance().DrawSubScene();
 	glutPostRedisplay();
 	glutSwapBuffers();
 }
 
+void setProjection(int w, int h)
+{
+	float ratio;
+
+	ratio = 1.0f * w / h;
+
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+
+	glViewport(0, 0, w, h); // 윈도우 뷰포트
+
+	gluPerspective(45, ratio, 0.1, 1000); // 1. 클리핑 공간 설정 원근투영
+										  //glTranslatef(0.0, 1.5, -3.0); // 시야 확보
+
+										  //glOrtho(0.0, w, 0.0, h, -1, 1); // 2. 클리핑 공간 설정 : 직각 투영
+
+	glMatrixMode(GL_MODELVIEW);
+} // Reshape == 화면 호출 때만 부르는거기에 한 번 만해도 족한 것들
+
 GLvoid Reshape(int w, int h)
 {
-	glViewport(0, 0, w, h);
+	//glViewport(0, 0, w, h);
+
+	//glutSetWindow(subWindow);
+	//glutPositionWindow(0, 0);
+	//glutReshapeWindow(300, 300);
+	//cout << "Reshape" << endl;
+	//setProjection(300, 300);
 }
 
 GLvoid Keyboard(unsigned char key, int x, int y)
@@ -66,8 +97,10 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	switch (key)
 	{
 	case ((char)13):	// enter key
-		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY)
+		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY) {
+			PlaySound(TEXT(SOUND_FILE_NAME_INGAME), NULL, SND_ASYNC | SND_SYNC);
 			InGameManager::GetInstance().SetState(GAMESTATE::INGAME);
+		}
 		break;
 	case '1':
 		InGameManager::GetInstance().SetFPS(true);
@@ -165,6 +198,7 @@ void TimerFunction(int value) {
 
 int main(int argc, char** argv)
 {
+	PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_SYNC);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(100, 100);
@@ -195,9 +229,18 @@ int main(int argc, char** argv)
 	glutSpecialFunc(processSpecialKeys);
 	glutTimerFunc(50, TimerFunction, 1);
 
+	//// SubWindow
+	//subMainWindow = glutCreateSubWindow(mainWindow, WINDOW_WITDH, WINDOW_HEIGHT, WINDOW_WITDH, WINDOW_HEIGHT);
+	//glutDisplayFunc(drawSceneSubWindow);
+
 	// SubWindow
-	subWindow = glutCreateSubWindow(mainWindow, 0, 0, 300, 300);
+	subWindow = glutCreateSubWindow(mainWindow, 0,0, 300, 120);
 	glutDisplayFunc(drawSceneSubWindow);
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
+	glutKeyboardFunc(Keyboard);
+	glutSpecialUpFunc(releaseKey);
+	glutSpecialFunc(processSpecialKeys);
 
 
 	glutMainLoop();

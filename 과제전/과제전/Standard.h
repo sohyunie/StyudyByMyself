@@ -37,9 +37,9 @@ const int MAX_VAO_TYPE = 9;
 #define POWERBEAD_FILE_NAME	"bead.obj"
 #define CUBE_FILE_NAME	"block.obj"
 
-//#define SOUND_FILE_NAME_INGAME_BEAD	"../sound/backgroundmusic.wav"  // πË∞Ê¿Ωæ«
+#define SOUND_FILE_NAME_INGAME	"bgm_InGame.wav"  // πË∞Ê¿Ωæ«
 //#define SOUND_FILE_NAME_INGAME_POWERBEAD	"../sound/backgroundmusic.wav"
-//#define SOUND_FILE_NAME_LOBBY	"../bgm_Lobby.wav"
+#define SOUND_FILE_NAME_LOBBY	"bgm_Lobby.wav"
 //#define SOUND_FILE_NAME_GAMEOVER	"../sound/backgroundmusic.wav"
 //#define SOUND_FILE_NAME_CLEAR	"../bgm_Clear.wav"
 

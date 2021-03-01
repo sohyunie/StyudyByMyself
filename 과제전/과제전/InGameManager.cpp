@@ -404,26 +404,25 @@ GLvoid InGameManager::DrawScene() {
 }
 
 GLvoid InGameManager::DrawSubScene() {
-	this->endingUI->DrawTextureImage(s_program, TextureType::CLEAR);
+	//this->endingUI->DrawTextureImage(s_program, TextureType::CLEAR);
 
-	std::list<Ghost*>::iterator it;
+	//std::list<Ghost*>::iterator it;
 	switch (this->state) {
 	case GAMESTATE::LOBBY:
 		break;
 	case GAMESTATE::INGAME:
-		it = vGhost.begin();
-		while (it != vGhost.end())
-		{
-			if ((*it)->GetIsActive()) {
-				(*it)->DrawObject(s_program);
-			}
-			it++;
-		}
-		this->player->DrawObject(s_program);
-		this->map->DrawMap(s_program);
-		this->bottom->DrawObject(s_program);
+		//it = vGhost.begin();
+		//while (it != vGhost.end())
+		//{
+		//	if ((*it)->GetIsActive()) {
+		//		(*it)->DrawObject(s_program);
+		//	}
+		//	it++;
+		//}
+		//this->player->DrawObject(s_program);
+		//this->map->DrawMap(s_program);
+		//this->bottom->DrawObject(s_program);
 		this->ingameUI->PrintInGameUI(s_program);
-		//this->ingameUI->PrintInGameUI(s_program);
 		break;
 	case GAMESTATE::GAMEOVER:
 		break;
@@ -747,6 +746,33 @@ void InGameManager::CheckDirection(DynamicObject *dObject) {
 	}
 }
 
+void InGameManager::PlayingBgm(const char* name) {
+	mciSendCommand(this->dwID, MCI_CLOSE, 0, NULL); //dwID 음악 종료
+	wchar_t text[30];
+
+	mbstowcs(text, name, strlen(name) + 1);
+	openBgm.lpstrElementName = text; //파일 오픈
+	openBgm.lpstrDeviceType = TEXT("waveaudio"); //wave 형식
+	mciSendCommand(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_OPEN_TYPE, (DWORD)(LPVOID)&openBgm);
+	this->dwID = openBgm.wDeviceID;
+	mciSendCommand(this->dwID, MCI_PLAY, MCI_DGV_PLAY_REPEAT, (DWORD)(LPVOID)&playBgm); //음악 반복 재생
+}
+
+void InGameManager::PlayingFxSound(const char* name) {
+	//mciSendCommand(this->dwID, MCI_CLOSE, 0, NULL); //dwID 음악 종료
+	mciSendCommand(this->fxDwID, MCI_CLOSE, 0, NULL); //dwID 음악 종료
+
+	wchar_t text[30];
+	mbstowcs(text, name, strlen(name) + 1);
+	openFxSound.lpstrElementName = text; //파일 오픈
+	openFxSound.lpstrDeviceType = TEXT("waveaudio"); //mp3 형식
+	mciSendCommand(0, MCI_OPEN, MCI_OPEN_ELEMENT | MCI_OPEN_TYPE, (DWORD)(LPVOID)&openFxSound);
+	this->fxDwID = openFxSound.wDeviceID;
+	mciSendCommand(this->fxDwID, MCI_PLAY, MCI_NOTIFY, (DWORD)(LPVOID)&playFxSound); //음악을 한 번 재생
+	//Sleep(1800); //효과음이 재생될 때까지 정지했다가
+	//mciSendCommand(this->dwID, MCI_SEEK, MCI_SEEK_TO_START, (DWORD)(LPVOID)NULL); //음원 재생 위치를 처음으로 초기화
+}
+
 default_random_engine dreColor_light((size_t)time(NULL));
 normal_distribution <float>uidColor_light{ 0.0,1.0 };
 int cycleCounter = 0;
@@ -806,6 +832,9 @@ void InGameManager::TimerFunction() {
 					this->player->temp_j = j;
 					this->map->boardShape[i][j] = new StaticObject(this->map->boardShape[i][j]->GetPosition());
 					this->DecreaseBeadNumber();
+					this->PlayingFxSound(SOUND_FILE_NAME_BEAD);
+					//PlaySound(TEXT(SOUND_FILE_NAME_BEAD), NULL, SND_ASYNC | SND_SYNC); // 반응 느린건 일단 이따 생각할게유!  우웅ㅇ
+					cout << "멍멍" << endl;
 					if(this->GetBeadCount() <= 0)
 						this->SetState(GAMESTATE::CLEAR);
 					// cout << "beadNumber: " << this->beadNumber << endl;

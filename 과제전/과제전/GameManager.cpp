@@ -98,7 +98,7 @@ GLvoid Keyboard(unsigned char key, int x, int y)
 	{
 	case ((char)13):	// enter key
 		if (InGameManager::GetInstance().GetState() == GAMESTATE::LOBBY) {
-			PlaySound(TEXT(SOUND_FILE_NAME_INGAME), NULL, SND_ASYNC | SND_SYNC);
+			InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_INGAME);
 			InGameManager::GetInstance().SetState(GAMESTATE::INGAME);
 		}
 		break;
@@ -198,7 +198,8 @@ void TimerFunction(int value) {
 
 int main(int argc, char** argv)
 {
-	PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_SYNC);
+	//PlaySound(TEXT(SOUND_FILE_NAME_LOBBY), NULL, SND_ASYNC | SND_LOOP);
+	InGameManager::GetInstance().PlayingBgm(SOUND_FILE_NAME_LOBBY);
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
 	glutInitWindowPosition(100, 100);

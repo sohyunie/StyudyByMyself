@@ -75,6 +75,8 @@ private:
     StartSceneUI* startUI;
     EndingScene* endingUI;
     unsigned int flaglocation;
+    int dwID;
+    int fxDwID;
 
 public:
     static InGameManager& GetInstance() {
@@ -144,7 +146,8 @@ public:
     void SetState(GAMESTATE state);
     void InitTexture();
 
-
+    void PlayingBgm(const char* name);
+    void PlayingFxSound(const char* name);
 protected:
 
 };

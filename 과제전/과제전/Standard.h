@@ -11,6 +11,8 @@
 #include <windows.h>
 #include <vector>
 #include <algorithm>
+#include <mmsystem.h>
+#include <Digitalv.h>
 #include <gl/glew.h> 
 #include <gl/freeglut.h>
 #include <gl/freeglut_ext.h>
@@ -19,10 +21,18 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#pragma comment (lib, "winmm.lib")
+
+
 class Ghost;
 
 using namespace std;
 const int MAX_VAO_TYPE = 9;
+
+static MCI_OPEN_PARMS openBgm;
+static MCI_PLAY_PARMS playBgm;
+static MCI_OPEN_PARMS openFxSound;
+static MCI_PLAY_PARMS playFxSound;
 
 #define WINDOW_WITDH	800
 #define WINDOW_HEIGHT	600
@@ -38,7 +48,7 @@ const int MAX_VAO_TYPE = 9;
 #define CUBE_FILE_NAME	"block.obj"
 
 #define SOUND_FILE_NAME_INGAME	"bgm_InGame.wav"  // πË∞Ê¿Ωæ«
-//#define SOUND_FILE_NAME_INGAME_POWERBEAD	"../sound/backgroundmusic.wav"
+#define SOUND_FILE_NAME_BEAD	"bgm_Bead.wav"
 #define SOUND_FILE_NAME_LOBBY	"bgm_Lobby.wav"
 //#define SOUND_FILE_NAME_GAMEOVER	"../sound/backgroundmusic.wav"
 //#define SOUND_FILE_NAME_CLEAR	"../bgm_Clear.wav"
